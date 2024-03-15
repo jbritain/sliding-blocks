@@ -46,10 +46,10 @@ class Board:
 
 		first_line_split = lines[0].split(" ")
 		
-		length = int(first_line_split[0])
+		length = int(first_line_split[0]) + 1
 		assert length > 0
 
-		width = int(first_line_split[1])
+		width = int(first_line_split[1]) + 1
 		assert width > 0
 
 		for line in lines[1:]: # skip first line as it describes the board
@@ -63,7 +63,7 @@ class Board:
 				)
 			))
 			
-			return ((length, width), blocks)
+		return ((length, width), blocks)
 
 	def parse_goal(goal: str) -> Block:
 		goal_split = goal.split(" ")
