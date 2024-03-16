@@ -4,8 +4,8 @@ from structures import *
 from solve_checker import *
 from solver import *
 
-board_path = sys.argv[0]
-goal_path = sys.argv[1]
+board_path = sys.argv[1]
+goal_path = sys.argv[2]
 
 def moves_from_string(data: str) -> list[Move]:
 	moves_split = data.split("\n")
