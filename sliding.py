@@ -2,6 +2,7 @@ import sys
 
 from structures import *
 from solve_checker import *
+from solver import *
 
 board_path = "puzzles/easy/1x1" #sys.argv[0]
 goal_path = "puzzles/easy/1x1.goal" #sys.argv[1]
@@ -37,4 +38,4 @@ board = Board(
 	"2 2 3 1"
 )
 
-try_solution(board, moves_from_string("1 1 0 1\n3 1 2 1\n4 1 3 1\n4 2 3 2\n4 0 4 2"))
+print(get_all_possible_moves(board))
