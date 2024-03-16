@@ -25,6 +25,9 @@ class Move:
 		self.old_pos = old_pos
 		self.new_pos = new_pos
 
+	def __str__(self):
+		return f"{self.old_pos[0]} {self.old_pos[1]} {self.new_pos[0]} {self.new_pos[1]}"
+
 class Board:
 	def __init__(self, board: str, goal: str) -> None:
 		parsed = Board.parse_board(board)
@@ -54,6 +57,8 @@ class Board:
 
 		for line in lines[1:]: # skip first line as it describes the board
 			line_split = line.split(" ")
+			if(line == ''):
+				continue
 			blocks.append(Block(
 				int(line_split[0]), 
 				int(line_split[1]), 
@@ -90,5 +95,35 @@ class Board:
 				return True
 		
 		return False
+	
+	def __str__(self):
+		chars = [
+			"X",
+			"#",
+			"H",
+			"%",
+			"&",
+			"@",
+			"$",
+			"*",
+			"K",
+			"O"
+		]
+
+		vis = []
+		for i in range(self.width):
+			vis.append([" "] * self.length)
+
+		for i, block in enumerate(self.blocks):
+			char = chars[i % (len(chars) - 1)]
+
+			for y in range(block.height):
+				for x in range(block.width):
+					vis[block.position[0] + x][block.position[1] + y] = char
+
+		rows = []
+		for row in vis:
+			rows.append(''.join(row))
+		return '\n'.join(rows)
 
 	

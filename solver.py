@@ -104,15 +104,43 @@ def get_all_possible_moves(board: Board) -> list[Move]:
 
     return moves
 
+def search_move(board: Board, start_time: float, move: Move = None) -> list[Move]:
+    if (time.time() - start_time) >= 59: # we cannot spend any more time on this puzzle
+        return []
     
+    global tried_board_states
+    
+    search_board = board
+    if move:
+        search_board.make_move(move)
+
+    if search_board in tried_board_states: # we have already tried this board so no need to check it again
+        return []
+
+    if (board.is_solved()):
+        return [move]
+    
+    tried_board_states.append(search_board)
+    
+    possible_moves = get_all_possible_moves(search_board)
+    
+    for next_move in possible_moves:
+        tried_move = search_move(search_board, start_time, next_move)
+        if tried_move != []:
+            return [move, tried_move]
+    
+    return []
 
 
 def solve(board: Board) -> list[Move]:
-    if (board.is_solved): # if board is already solved, just move a block to its current position
-        return Move(board.blocks[0].position, board.blocks[0].position) 
+    global tried_board_states # ooer global variables??? this is so that the multiple recursive threads can all avoid checking board states we have already checked
+    tried_board_states = []
+
+    if (board.is_solved()): # if board is already solved, just move a block to its current position
+        return [Move(board.blocks[0].position, board.blocks[0].position)]
 
     start_time = time.time()
-    while True:
-        if (time.time - start_time) >= 59: # we cannot spend any more time on this puzzle
-            return [-1]
+    return search_move(board, start_time)
+
+
     
