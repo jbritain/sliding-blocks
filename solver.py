@@ -21,7 +21,7 @@ def get_available_moves(block: Block, occupied: list[list[int]], block_position:
     if block_position is None:
         block_position = block.position
     
-    print(f"depth: {depth}")
+    #print(f"depth: {depth}")
 
     moves = []
 
@@ -33,60 +33,60 @@ def get_available_moves(block: Block, occupied: list[list[int]], block_position:
     if (block_position[0] > 0): # ensure we aren't at the left of the board
         # check the left
         left_occupied = False
-        print(f"Checking left position {block_position[1]-1}, {block_position[0]}: ", end="")
+        #print(f"Checking left position {block_position[1]-1}, {block_position[0]}: ", end="")
         for i in range(block.height): # check all spaces one to the left of the block
             if occupied[block_position[1] + i][block_position[0] - 1] == -1: # space is not empty
                 left_occupied = True
-                print("occupied")
+                #print("occupied")
                 break
 
         if not left_occupied:
-            print("unoccupied")
+            #print("unoccupied")
             moves.append(Move(block.position,(block_position[0]-1, block_position[1])))
             moves.extend( get_available_moves(block, occupied, (block_position[0]-1, block_position[1]), tried_spaces, depth=depth+1))
 
     if (block_position[1] > 0): # ensure we aren't at the top of the board
         # check the top
         top_occupied = False
-        print(f"Checking top position {block_position[1]}, {block_position[0]-1}: ", end="")
+        #print(f"Checking top position {block_position[1]}, {block_position[0]-1}: ", end="")
         for i in range(block.width): # check all spaces one to the top of the block
             if occupied[block_position[1] - 1][block_position[0] + i] == -1: # space is not empty
                 top_occupied = True
-                print("occupied")
+                #print("occupied")
                 break
         
         if not top_occupied:
-            print("unoccupied")
+            #print("unoccupied")
             moves.append(Move(block.position, (block_position[0], block_position[1]-1)))
             moves.extend( get_available_moves(block, occupied, (block_position[0], block_position[1]-1), tried_spaces, depth=depth+1))
 
     if (block_position[0] + block.width < len(occupied[0]) - 1): # ensure we aren't at the right of the board
         # check the right
         right_occupied = False
-        print(f"Checking right position {block_position[1]+1}, {block_position[0]}: ", end="")
+        #print(f"Checking right position {block_position[1]+1}, {block_position[0]}: ", end="")
         for i in range(block.height): # check all spaces one to the right of the block
             if occupied[block_position[1] + i][block_position[0] + block.width + 1] == -1: # space is not empty
                 right_occupied = True
-                print("occupied")
+                #print("occupied")
                 break
         
         if not right_occupied:
-            print("unoccupied")
+            #print("unoccupied")
             moves.append(Move(block.position, (block_position[0]+1, block_position[1])))
             moves.extend( get_available_moves(block, occupied, (block_position[0]+1, block_position[1]), tried_spaces, depth=depth+1))
 
     if (block_position[1] + block.height < len(occupied) - 1): # ensure we aren't at the bottom of the board
         # check the bottom
         bottom_occupied = False
-        print(f"Checking bottom position {block_position[1]}, {block_position[0]+1}: ", end="")
+        #print(f"Checking bottom position {block_position[1]}, {block_position[0]+1}: ", end="")
         for i in range(block.width): # check all spaces one to the bottom of the block
             if occupied[block_position[1] + block.height + 1][block_position[0] + i] == -1: # space is not empty
                 bottom_occupied = True
-                print("occupied")
+                #print("occupied")
                 break
         
         if not bottom_occupied:
-            print("unoccupied")
+            #print("unoccupied")
             moves.append(Move(block.position, (block_position[0], block_position[1]+1)))
             moves.extend( get_available_moves(block, occupied, (block_position[0], block_position[1]+1), tried_spaces, depth=depth+1))
 

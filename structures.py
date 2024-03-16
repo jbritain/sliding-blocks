@@ -71,7 +71,7 @@ class Board:
 		return ((length, width), blocks)
 
 	def parse_goal(goal: str) -> Block:
-		goal_split = goal.split(" ")
+		goal_split = goal.replace("\n", "").split(" ")
 		return Block(
 			int(goal_split[0]), 
 			int(goal_split[1]), 
