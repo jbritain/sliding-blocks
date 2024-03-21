@@ -102,58 +102,51 @@ def get_all_possible_moves(board: Board) -> list[Move]:
     return moves
 
 def search_move(board: Board, start_time: float, move: Move = None, depth: int = 0) -> list[Move]:
-    if (time.time() - start_time) >= 59: # we cannot spend any more time on this puzzle
-        return []
-    
-    #print("---")
-    #print(f"Trying move {move}")
-    #print(f"depth: {depth}")
+    move_queue = Queue()
 
-    global tried_board_states
+    tried_board_states = []
     
-    search_board = copy.deepcopy(board)
-    if move:
-        search_board.make_move(move)
-        
-    #print(visualise_board(search_board))
+    inital_moves = get_all_possible_moves(board)
+    for move in inital_moves:
+        move_queue.enqueue((board, move, []))
 
-    for tried_board in tried_board_states:
-        if tried_board == search_board:
-            #print("Board already tested")
-            return []
+    while len(move_queue) > 0:
+        if time.time() - start_time > 59:
+            return -1
 
-    if (board.is_solved()):
-       #print(visualise_board(board))
-        return [Move((-1, -1), (-1, -1))]
-    
-    tried_board_states.append(search_board)
-    
-    possible_moves = get_all_possible_moves(search_board)
+        (board, move, previous_moves) = move_queue.dequeue()
 
-   ##print(f"found {len(possible_moves)} possible moves")
+        test_board = copy.deepcopy(board)
+        test_board.make_move(move)
+
+        if(test_board in tried_board_states):
+            continue # we already tried this board
+
+        tried_board_states.append(test_board)
+
+        if(test_board.is_solved()):
+            return previous_moves + [move] # we did it chat
+        else:
+            new_moves = get_all_possible_moves(test_board)
+            for next_move in new_moves:
+                move_queue.enqueue((test_board, next_move, previous_moves + [move]))
+
+    return -1
+
+
+
     
-    for next_move in possible_moves:
-        tried_move = search_move(search_board, start_time, next_move, depth+1)
-        if tried_move != []:
-            if move:
-                return [move] + tried_move
-            else:
-                return tried_move
     
     return []
 
 
 def solve(board: Board) -> list[Move]:
-    global tried_board_states # ooer global variables??? this is so that the multiple recursive threads can all avoid checking board states we have already checked
-    tried_board_states = []
-
     if (board.is_solved()): # if board is already solved, just move a block to its current position
         return [Move(board.blocks[0].position, board.blocks[0].position)]
 
     start_time = time.time()
 
-    solution = search_move(board, start_time)
-    solution = solution[:-1] # remove last move since this takes us away from the solution
+    solution = search_move(copy.deepcopy(board), start_time)
 
     if solution == []:
         return -1

@@ -134,3 +134,23 @@ def moves_from_string(data: str) -> list[Move]:
 			)
 		)
 	return moves
+
+class Queue:
+	def __init__(self) -> None:
+		self.queue = []
+
+	def enqueue(self, e):
+		self.queue.append(e)
+
+	def dequeue(self):
+		if len(self.queue) == 0:
+			raise IndexError("Queue is empty")
+		return self.queue.pop(0)
+	
+	def first(self):
+		if len(self.queue) == 0:
+			raise IndexError("Queue is empty")
+		return self.queue[0]
+	
+	def __len__(self):
+		return len(self.queue)

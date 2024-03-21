@@ -10,7 +10,7 @@ board_path = None
 goal_path = None
 
 try:
-	board_path = sys.argv[1]
+	board_path = sys.argv[1] 
 	goal_path = sys.argv[2]
 except Exception:
 	pass
@@ -96,7 +96,6 @@ else:
 			goal_data = gf.read()
 
 		board = Board(board_data, goal_data)
-
 		solution = solve(board)
 		if(solution == []):
 			print("-1")
