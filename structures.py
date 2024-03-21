@@ -106,7 +106,7 @@ class Board:
 				block.position = move.new_pos
 				return True
 		
-		return False
+		raise Exception("No block could be found at the specified position")
 	
 	def __eq__(self, other):
 		eq = True
@@ -114,5 +114,6 @@ class Board:
 		if self.length != other.length: return False
 		if self.blocks != other.blocks: return False
 		if self.goals != other.goals: return False
+		return eq
 
 		

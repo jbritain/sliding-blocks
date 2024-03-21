@@ -7,9 +7,12 @@ def try_solution(board: Board, moves: list[Move]) -> bool:
 
     for move in moves:
         print(visualise_board(test_board))
-        print("---")
         test_board.make_move(move)
+        print(move)
     print(visualise_board(test_board))
     
-    print(board.is_solved())
+    if(test_board.is_solved()):
+        print("Solution is correct")
+    else:
+        print("Solution is incorrect")
 
