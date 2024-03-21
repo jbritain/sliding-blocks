@@ -7,8 +7,8 @@ from structures import *
 from solve_checker import *
 from solver import *
 
-sys.argv[1]
-sys.argv[2]
+board_path = sys.argv[1]
+goal_path = sys.argv[2]
 
 def moves_from_string(data: str) -> list[Move]:
 	moves_split = data.split("\n")
