@@ -7,8 +7,8 @@ from structures import *
 from solve_checker import *
 from solver import *
 
-board_path = "puzzles/easy/big.block.4"# sys.argv[1]
-goal_path = "puzzles/easy/big.block.4.goal" # sys.argv[2]
+sys.argv[1]
+sys.argv[2]
 
 def moves_from_string(data: str) -> list[Move]:
 	moves_split = data.split("\n")
@@ -37,14 +37,14 @@ with open(goal_path) as gf:
 
 board = Board(board_data, goal_data)
 
-print("BOARD:")
-print(visualise_board(board))
+# print("BOARD:")
+# print(visualise_board(board))
 
-print("GOAL:")
-print(visualise_board(board, board.goals))
+# print("GOAL:")
+# print(visualise_board(board, board.goals))
 
-print("---")
-print("SOLUTION:")
+# print("---")
+# print("SOLUTION:")
 
 solution = solve(board)
 
