@@ -102,8 +102,8 @@ def get_all_possible_moves(board: Board) -> list[Move]:
     return moves
 
 def search_move(board: Board, start_time: float, move: Move = None, depth: int = 0) -> list[Move]:
-    # if (time.time() - start_time) >= 59: # we cannot spend any more time on this puzzle
-    #     return []
+    if (time.time() - start_time) >= 59: # we cannot spend any more time on this puzzle
+        return []
     
     #print("---")
     #print(f"Trying move {move}")
@@ -155,6 +155,8 @@ def solve(board: Board) -> list[Move]:
     solution = search_move(board, start_time)
     solution = solution[:-1] # remove last move since this takes us away from the solution
 
+    if solution == []:
+        return -1
 
     return solution
 
