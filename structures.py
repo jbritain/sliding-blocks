@@ -29,13 +29,13 @@ class Move:
 		return f"{self.old_pos[0]} {self.old_pos[1]} {self.new_pos[0]} {self.new_pos[1]}"
 
 class Board:
-	def __init__(self, board: str, goal: str) -> None:
+	def __init__(self, board: str, goals: str) -> None:
 		parsed = Board.parse_board(board)
 		self.blocks = parsed[1]
 		self.length = parsed[0][0]
 		self.width = parsed[0][1]
 		
-		self.goal = Board.parse_goal(goal)
+		self.goals = Board.parse_goals(goals)
     
 
 	def parse_board(board: str) -> tuple[tuple[int, int], list[Block]]:
@@ -70,23 +70,35 @@ class Board:
 			
 		return ((length, width), blocks)
 
-	def parse_goal(goal: str) -> Block:
-		goal_split = goal.replace("\n", "").split(" ")
-		return Block(
-			int(goal_split[0]), 
-			int(goal_split[1]), 
-			(
-			int(goal_split[2]), 
-			int(goal_split[3])
-			)
-		)
+	def parse_goals(goals: str) -> list[Block]:
+		goals_split = goals.split("\n")
+		goal_blocks = []
+
+		for goal in goals_split:
+			if goal == '':
+				continue
+			goal_split = goal.replace("\n", "").split(" ")
+			goal_blocks.append(Block(
+				int(goal_split[0]), 
+				int(goal_split[1]), 
+				(
+				int(goal_split[2]), 
+				int(goal_split[3])
+				)
+			))
+		
+		return goal_blocks
 	
 	def is_solved(self) -> bool:
-		for block in self.blocks:
-			if block == self.goal:
-				return True
+		for goal in self.goals:
+			goal_found = False
+			for block in self.blocks:
+				if block == goal:
+					goal_found = True
+			if not goal_found:
+				return False # we never found a block matching this goal
 		
-		return False
+		return True
 	
 	def make_move(self, move: Move) -> bool:
 		for block in self.blocks:

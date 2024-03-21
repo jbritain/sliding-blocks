@@ -1,31 +1,51 @@
 from structures import *
 
-def visualise_board(board: Board) -> str:
+def visualise_board(board: Board, blocks: list[Block] = None) -> str:
+    # chars = [
+    #     "X",
+    #     "#",
+    #     "H",
+    #     "%",
+    #     "&",
+    #     "@",
+    #     "$",
+    #     "*",
+    #     "K",
+    #     "O"
+    # ]
     chars = [
-        "X",
-        "#",
-        "H",
-        "%",
-        "&",
-        "@",
-        "$",
-        "*",
-        "K",
-        "O"
+        "■",
+        "□",
+        "▣",
+        "▤",
+        "▥",
+        "▦",
+        "▧",
+        "▨",
+        "▩",
+        "◘",
+        "◙"
     ]
 
-    vis = []
-    for i in range(board.width):
-        vis.append([" "] * board.length)
+    if not blocks:
+        blocks = board.blocks
 
-    for i, block in enumerate(board.blocks):
-        char = chars[i % (len(chars) - 1)]
+    vis = []
+    for i in range(board.length):
+        vis.append(["  "] * board.width)
+
+    for i, block in enumerate(blocks):
+        char = chars[i % (len(chars) - 1)] + " "
 
         for y in range(block.height):
             for x in range(block.width):
-                vis[block.position[0] + x][block.position[1] + y] = char
+                vis[block.position[1] + y][block.position[0] + x] = char
 
     rows = []
+    rows.append("┌" + "─" * (board.width * 2) + "┐")
     for row in vis:
+        row += ["│"]
+        row = ["│"] + row
         rows.append(''.join(row))
+    rows.append("└" + "─" * (board.width * 2) + "┘")
     return '\n'.join(rows)

@@ -1,11 +1,14 @@
 import sys
+import os
+
+os.system("cls")
 
 from structures import *
 from solve_checker import *
 from solver import *
 
-board_path = sys.argv[1]
-goal_path = sys.argv[2]
+board_path = "puzzles/easy/big.block.1"# sys.argv[1]
+goal_path = "puzzles/easy/big.block.1.goal" # sys.argv[2]
 
 def moves_from_string(data: str) -> list[Move]:
 	moves_split = data.split("\n")
