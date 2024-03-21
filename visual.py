@@ -1,18 +1,6 @@
 from structures import *
 
-def visualise_board(board: Board, blocks: list[Block] = None) -> str:
-    # chars = [
-    #     "X",
-    #     "#",
-    #     "H",
-    #     "%",
-    #     "&",
-    #     "@",
-    #     "$",
-    #     "*",
-    #     "K",
-    #     "O"
-    # ]
+def get_char(block_id: int):
     chars = [
         "■",
         "□",
@@ -27,6 +15,22 @@ def visualise_board(board: Board, blocks: list[Block] = None) -> str:
         "◙"
     ]
 
+    return chars[block_id % (len(chars) - 1)]
+
+def visualise_board(board: Board, blocks: list[Block] = None) -> str:
+    # chars = [
+    #     "X",
+    #     "#",
+    #     "H",
+    #     "%",
+    #     "&",
+    #     "@",
+    #     "$",
+    #     "*",
+    #     "K",
+    #     "O"
+    # ]
+
     if not blocks:
         blocks = board.blocks
 
@@ -35,7 +39,7 @@ def visualise_board(board: Board, blocks: list[Block] = None) -> str:
         vis.append(["  "] * board.width)
 
     for i, block in enumerate(blocks):
-        char = chars[i % (len(chars) - 1)] + " "
+        char = get_char(i) + " "
 
         for y in range(block.height):
             for x in range(block.width):

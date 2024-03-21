@@ -108,34 +108,11 @@ class Board:
 		
 		return False
 	
-	def __str__(self):
-		chars = [
-			"X",
-			"#",
-			"H",
-			"%",
-			"&",
-			"@",
-			"$",
-			"*",
-			"K",
-			"O"
-		]
+	def __eq__(self, other):
+		eq = True
+		if self.width != other.width: return False
+		if self.length != other.length: return False
+		if self.blocks != other.blocks: return False
+		if self.goals != other.goals: return False
 
-		vis = []
-		for i in range(self.width):
-			vis.append([" "] * self.length)
-
-		for i, block in enumerate(self.blocks):
-			char = chars[i % (len(chars) - 1)]
-
-			for y in range(block.height):
-				for x in range(block.width):
-					vis[block.position[0] + x][block.position[1] + y] = char
-
-		rows = []
-		for row in vis:
-			rows.append(''.join(row))
-		return '\n'.join(rows)
-
-	
+		
