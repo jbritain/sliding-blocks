@@ -9,16 +9,25 @@ class Block:
 		self.position = position
 		assert position[0] >= 0
 		assert position[1] >= 0
+
+	def __str__(self):
+		return f"{self.width} {self.height} {self.position[0]} {self.position[1]}"
 	
 	def __eq__(self, other):
 		if not isinstance(other, Block):
-			return NotImplemented
+			raise NotImplementedError
 
-		return (
-			self.width    == other.width  and
-			self.height   == other.height and
-			self.position == other.position
-		)
+		if self.width != other.width:
+			#print("widths not equal")
+			return False
+		if self.height != other.height:
+			#print("heights not equal")
+			return False
+		if self.position != other.position:
+			#print(f"position not equal: {self.position}, {other.position}")
+			return False
+		#print("Equal!")
+		return True
 
 class Move:
 	def __init__(self, old_pos: tuple[int, int], new_pos: tuple[int, int]):
@@ -36,6 +45,9 @@ class Board:
 		self.width = parsed[0][1]
 		
 		self.goals = Board.parse_goals(goals)
+
+	def __hash__(self):
+		return hash((self.length, self.width, ' '.join([str(b) for b in self.blocks])))
     
 
 	def parse_board(board: str) -> tuple[tuple[int, int], list[Block]]:
@@ -95,9 +107,13 @@ class Board:
 			for block in self.blocks:
 				if block == goal:
 					goal_found = True
+					#print("Matching block")
+					break
 			if not goal_found:
+				#print("Goal not found")
 				return False # we never found a block matching this goal
-		
+			
+		#print("Solution match")	
 		return True
 	
 	def make_move(self, move: Move) -> bool:

@@ -9,14 +9,19 @@ from solver import *
 board_path = None
 goal_path = None
 
+#sys.stdout = open("./output.txt", "w", encoding="utf-8")
+
 try:
 	board_path = sys.argv[1] 
 	goal_path = sys.argv[2]
 except Exception:
 	pass
 
+
+
 def run_tests():
 	os.system("cls")
+
 	puzzles = []
 
 	with open("puzzles/easy_puzzles.csv") as easy_file:
@@ -67,23 +72,26 @@ def run_tests():
 
 		try:
 			solution = solve(board)
+
+			if solution != -1:
+				solution_correct = try_solution(board, solution, False)
+				if(solution_correct == possible):
+					print(f"PASS{' (impossible)' if not possible else ''}")
+					successful += 1
+				else:
+					print("FAIL (incorrect solution)")
+					failed += 1
+			else:
+				if possible:
+					print("FAIL (no solution or timeout)")
+					failed += 1
+				else:
+					print("PASS")
+					successful += 1
 		except RecursionError:
-			solution = -1
-		if solution != -1:
-			solution_correct = try_solution(board, solution, False)
-			if(solution_correct == possible):
-				print("PASS")
-				successful += 1
-			else:
-				print("FAIL (incorrect solution)")
-				failed += 1
-		else:
-			if possible:
-				print("FAIL (no solution or timeout)")
-				failed += 1
-			else:
-				print("PASS")
-				successful += 1
+			print("FAIL (recursion depth exceeded)")
+			failed += 1
+		
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 
 if board_path == goal_path == None:
@@ -97,8 +105,12 @@ else:
 
 		board = Board(board_data, goal_data)
 		solution = solve(board)
-		if(solution == []):
+		if(solution == -1):
 			print("-1")
 		else:
 			for move in solution:
 				print(move)
+
+		print(try_solution(board, solution))
+
+#sys.stdout.close()
