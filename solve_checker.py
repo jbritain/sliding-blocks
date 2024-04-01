@@ -12,8 +12,8 @@ def try_solution(board: Board, moves: list[Move], debug = True) -> bool:
 
     for move in moves:
         if debug: print(visualise_board(test_board))
-        test_board.make_move(move)
         if debug: print(move)
+        test_board.make_move(move)
     if debug: print(visualise_board(test_board))
     
     return test_board.is_solved()

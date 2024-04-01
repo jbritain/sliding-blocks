@@ -17,10 +17,11 @@ try:
 except Exception:
 	pass
 
+os.system("cls")
 
 
 def run_tests():
-	os.system("cls")
+
 
 	puzzles = []
 

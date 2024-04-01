@@ -1,3 +1,6 @@
+def taxicab_distance(pos_1: tuple[int, int], pos_2: tuple[int, int]):
+	return abs(pos_1[0] - pos_2[0]) + abs(pos_1[1] - pos_2[1])
+
 class Block:
 	def __init__(self, width: int, height: int, position: tuple[int, int]) -> None:
 		self.width = width
@@ -131,6 +134,31 @@ class Board:
 		if self.blocks != other.blocks: return False
 		if self.goals != other.goals: return False
 		return eq
+	
+	# returns a value between 0 and 1 ranking how favourable the board is based on a number of factors
+	def rank(self) -> float:
+		# distance (taxicab)
+		# we use taxicab since we can't move pieces diagonally
+
+		# for each goal, select the nearest block which matches it, and use that distance
+		# sum the distances
+
+		distance_sum = 0
+
+		for goal in self.goals:
+			for block in self.blocks:
+				distance = float('inf')
+				if goal.width == block.width and goal.height == block.height: # matches goal
+					taxicab = taxicab_distance(goal.position, block.position)
+					distance = min(distance, taxicab) # set to smaller of two distances
+				
+			distance_sum += distance
+		
+
+		return distance_sum
+
+		
+
 
 def moves_from_string(data: str) -> list[Move]:
 	moves_split = data.split("\n")

@@ -101,52 +101,58 @@ def get_all_possible_moves(board: Board) -> list[Move]:
 
     return moves
 
-def search_move(board: Board, start_time: float, move: Move = None, depth: int = 0) -> list[Move]:
-    move_queue = Queue()
 
-    tried_board_states = []
+def search_board(board: Board, start_time: float, depth: int = 0) -> list[Move]:
+    #print(f"Depth: {depth}")
+    #print("Searching board...")
+    #print(visualise_board(board))
+
+    global tried_board_states
+    tried_board_states.add(board)
+
+    moves = get_all_possible_moves(board)
     
-    inital_moves = get_all_possible_moves(board)
-    for move in inital_moves:
-        move_queue.enqueue((board, move, []))
+    moves_and_boards = [] # list of moves and their resultant boards (i.e the board and the move that got it there)
+    for next_move in moves:
+        next_board = copy.deepcopy(board)
+        next_board.make_move(next_move)
 
-    while len(move_queue) > 0:
-        if time.time() - start_time > 59:
-            return -1
-
-        (board, move, previous_moves) = move_queue.dequeue()
-
-        test_board = copy.deepcopy(board)
-        test_board.make_move(move)
-
-        if(test_board in tried_board_states):
-            continue # we already tried this board
-
-        tried_board_states.append(test_board)
-
-        if(test_board.is_solved()):
-            return previous_moves + [move] # we did it chat
-        else:
-            new_moves = get_all_possible_moves(test_board)
-            for next_move in new_moves:
-                move_queue.enqueue((test_board, next_move, previous_moves + [move]))
-
-    return -1
-
-
-
+        if next_board.is_solved(): # check if any of them are solved, in which case this is the move we want
+            #print(f"Trying move {next_move}")
+            #print(f"Depth: {depth+1}")
+            #print("Searching board...")
+            #print(visualise_board(board))
+            #print("Solution found!")
+            return [next_move]
+        
+        if not next_board in tried_board_states: # check if we have already tried any of them
+            moves_and_boards.append((next_move, next_board))
     
-    
+    #print(f"Found {len(moves_and_boards)} possible moves")
+
+
+    moves_and_boards.sort(key=lambda b: b[1].rank(), reverse=False) # rank moves by how good their boards are
+
+    for next_move_and_board in moves_and_boards:
+        #print(f"Trying move {next_move_and_board[0]}")
+        res = search_board(next_move_and_board[1], start_time, depth + 1)
+        if res != []:
+            #print(f"move {next_move} success")
+            return [next_move_and_board[0]] + res
+
     return []
 
 
 def solve(board: Board) -> list[Move]:
+    global tried_board_states
+    tried_board_states = set()
+
     if (board.is_solved()): # if board is already solved, just move a block to its current position
         return [Move(board.blocks[0].position, board.blocks[0].position)]
 
     start_time = time.time()
 
-    solution = search_move(copy.deepcopy(board), start_time)
+    solution = search_board(copy.deepcopy(board), start_time)
 
     if solution == []:
         return -1
