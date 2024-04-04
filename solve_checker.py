@@ -10,11 +10,13 @@ def try_solution(board: Board, moves: list[Move], debug = True) -> bool:
         print(visualise_board(test_board, test_board.goals))
         print("TEST:")
 
-    for move in moves:
+    if moves != -1:
+        for move in moves:
+            if debug: print(visualise_board(test_board))
+            if debug: print(move)
+            test_board.make_move(move)
         if debug: print(visualise_board(test_board))
-        if debug: print(move)
-        test_board.make_move(move)
-    if debug: print(visualise_board(test_board))
-    
-    return test_board.is_solved()
-
+        
+        return test_board.is_solved()
+    else:
+        print("No solution")

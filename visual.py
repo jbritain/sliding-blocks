@@ -11,8 +11,6 @@ def get_char(block_id: int):
         "▧",
         "▨",
         "▩",
-        "◘",
-        "◙"
     ]
 
     return chars[block_id % (len(chars) - 1)]
