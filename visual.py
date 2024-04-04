@@ -33,7 +33,7 @@ def visualise_board(board: Board, blocks: list[Block] = None) -> str:
         blocks = board.blocks
 
     vis = []
-    for i in range(board.length):
+    for i in range(board.length - 1):
         vis.append(["  "] * board.width)
 
     for i, block in enumerate(blocks):

@@ -17,8 +17,9 @@ def search_board(board: Board, start_time: float, depth: int = 0) -> list[Move]:
     print("Searching board...")
     print(visualise_board(board))
 
-    if(time.time() - start_time > 59):
-        return []
+    # if(time.time() - start_time > 59):
+    #     print("Time limit exceeded")
+    #     return []
 
     global tried_board_states
     print(f"New tried board ID: {len(tried_board_states)}")

@@ -12,8 +12,8 @@ goal_path = None
 sys.stdout = open("./output.txt", "w", encoding="utf-8")
 
 try:
-	board_path = "puzzles/medium/c15" #sys.argv[1] 
-	goal_path = "puzzles/medium/15.23-27.30.41.goal"#sys.argv[2]
+	board_path = "puzzles/easy/140x140" #sys.argv[1] 
+	goal_path = "puzzles/easy/140x140.goal"#sys.argv[2]
 except Exception:
 	pass
 
@@ -95,7 +95,7 @@ def run_tests():
 		
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 
-if board_path == goal_path == None or True:
+if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:

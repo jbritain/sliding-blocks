@@ -29,15 +29,15 @@ class Block:
 			raise NotImplementedError
 
 		if self.width != other.width:
-			##print("widths not equal")
+			#print("widths not equal")
 			return False
 		if self.height != other.height:
-			##print("heights not equal")
+			#print("heights not equal")
 			return False
 		if self.position != other.position:
-			##print(f"position not equal: {self.position}, {other.position}")
+			#print(f"position not equal: {self.position}, {other.position}")
 			return False
-		##print("Equal!")
+		#print("Equal!")
 		return True
 	
 	def get_available_moves(self, board):
@@ -54,50 +54,50 @@ class Block:
 		moves = []
 
 		#print(f"Checking block at {self.position}")
+		for x_offset in range(-1, -block_position[0]-1, -1): # if we can move then we check another block in that direction to see how far we can go
+			# check the left
+			left_occupied = False
+			#print(f"Checking left position {block_position[0]+x_offset}, {block_position[1]}: ", end="")
+			if(self.left_block_y != -1 and occupied[self.left_block_y][block_position[0] + x_offset]): # check position we were blocked at last time since this is most likely to still be blocking us
+					#print("cache hit - ", end="")
+					left_occupied = True
+			else:
+					for i in range(self.height): # check all spaces one to the left of the block
+							if occupied[block_position[1] + i][block_position[0] + x_offset]: # space is not empty
+									left_occupied = True
+									self.left_block_y = block_position[1] + i
+									break
 
-		if (block_position[0] > 0): # ensure we aren't at the left of the board
-				# check the left
-				left_occupied = False
-				#print(f"Checking left position {block_position[0]-1}, {block_position[1]}: ", end="")
-				if(self.left_block_y != -1 and occupied[self.left_block_y][block_position[0] - 1]): # check position we were blocked at last time since this is most likely to still be blocking us
-						#print("cache hit - ", end="")
-						left_occupied = True
-				else:
-						for i in range(self.height): # check all spaces one to the left of the block
-								if occupied[block_position[1] + i][block_position[0] - 1]: # space is not empty
-										left_occupied = True
-										#self.left_block_y = block_position[1] + i
-										break
+			if not left_occupied:
+					#print("unoccupied")
+					move = Move(self.position,(block_position[0] + x_offset, block_position[1]))
+					moves.append(move)
+			else:
+					#print("occupied")
+					break
 
-				if not left_occupied:
-						#print("unoccupied")
-						move = Move(self.position,(block_position[0]-1, block_position[1]))
-						moves.append(move)
-				else:
-						#print("occupied")
-						pass
-
-		if (block_position[1] > 0): # ensure we aren't at the top of the board
-				# check the top
-				top_occupied = False
-				#print(f"Checking top position {block_position[0]}, {block_position[1]-1}: ", end="")
-				if(self.top_block_x != -1 and occupied[block_position[1] - 1][self.top_block_x]): 
-						#print("cache hit - ", end="")
-						top_occupied = True
-				else: 
-						for i in range(self.width): # check all spaces one to the top of the block
-								if occupied[block_position[1] - 1][block_position[0] + i]: # space is not empty
-										top_occupied = True
-										#self.top_block_x = block_position[0] + i
-										break
-				
-				if not top_occupied:
-						#print("unoccupied")
-						move = Move(self.position, (block_position[0], block_position[1]-1))
-						moves.append(move)
-				else:
-						#print("occupied")
-						pass
+		for y_offset in range(0, -block_position[1], -1):
+			if (block_position[1] > 0): # ensure we aren't at the top of the board
+					# check the top
+					top_occupied = False
+					#print(f"Checking top position {block_position[0]}, {block_position[1]+}: ", end="")
+					if(self.top_block_x != -1 and occupied[block_position[1] - 1][self.top_block_x]): 
+							#print("cache hit - ", end="")
+							top_occupied = True
+					else: 
+							for i in range(self.width): # check all spaces one to the top of the block
+									if occupied[block_position[1] - 1][block_position[0] + i]: # space is not empty
+											top_occupied = True
+											#self.top_block_x = block_position[0] + i
+											break
+					
+					if not top_occupied:
+							#print("unoccupied")
+							move = Move(self.position, (block_position[0], block_position[1]-1))
+							moves.append(move)
+					else:
+							#print("occupied")
+							break
 
 		if (block_position[0] + self.width < len(occupied[0]) - 1): # ensure we aren't at the right of the board
 				# check the right
@@ -229,25 +229,30 @@ class Board:
 			for block in self.blocks:
 				if block == goal:
 					goal_found = True
-					##print("Matching block")
+					#print("Matching block")
 					break
 			if not goal_found:
-				##print("Goal not found")
+				#print("Goal not found")
 				return False # we never found a block matching this goal
 			
-		##print("Solution match")	
+		#print("Solution match")	
 		return True
 	
 	def make_move(self, move: Move) -> bool:
+		move_made = False
 		for block in self.blocks:
+			block.available_moves = None
+
 			if block.position == move.old_pos:
 				block.position = move.new_pos
 				block.left_block_y = -1
 				block.right_block_y = -1
 				block.top_block_x = -1
 				block.bottom_block_x = -1
-				block.available_moves = None
-				return True
+				move_made = True
+			
+		if move_made:
+			return True
 		
 		raise Exception("No block could be found at the specified position")
 	
@@ -306,7 +311,7 @@ class Board:
 			moves = []
 
 			for block in self.blocks:
-					moves.extend(block.get_available_moves(self))
+				moves.extend(block.get_available_moves(self))
 
 			return moves
 
