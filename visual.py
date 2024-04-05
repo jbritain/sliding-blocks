@@ -32,9 +32,10 @@ def visualise_board(board: Board, blocks: list[Block] = None) -> str:
     if not blocks:
         blocks = board.blocks
 
+    print(f"{board.width}x{board.length}")
     vis = []
     for i in range(board.length - 1):
-        vis.append(["  "] * board.width)
+        vis.append(["  "] * (board.width))
 
     for i, block in enumerate(blocks):
         char = get_char(i) + " "
@@ -44,10 +45,10 @@ def visualise_board(board: Board, blocks: list[Block] = None) -> str:
                 vis[block.position[1] + y][block.position[0] + x] = char
 
     rows = []
-    rows.append("┌" + "─" * (board.width * 2) + "┐")
+    rows.append("┌" + "─" * ((board.width) * 2) + "┐")
     for row in vis:
         row += ["│"]
         row = ["│"] + row
         rows.append(''.join(row))
-    rows.append("└" + "─" * (board.width * 2) + "┘")
+    rows.append("└" + "─" * ((board.width) * 2) + "┘")
     return '\n'.join(rows)

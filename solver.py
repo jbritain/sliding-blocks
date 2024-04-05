@@ -17,9 +17,9 @@ def search_board(board: Board, start_time: float, depth: int = 0) -> list[Move]:
     print("Searching board...")
     print(visualise_board(board))
 
-    # if(time.time() - start_time > 59):
-    #     print("Time limit exceeded")
-    #     return []
+    if(time.time() - start_time > 59):
+        print("Time limit exceeded")
+        return []
 
     global tried_board_states
     print(f"New tried board ID: {len(tried_board_states)}")
@@ -45,13 +45,15 @@ def search_board(board: Board, start_time: float, depth: int = 0) -> list[Move]:
             
         else:
             print(f"Move {next_move} results in repeat board ID: {tried_board_states.index(next_board)}")
+            pass
     
     print(f"Found {len(moves_and_boards)} possible moves")
 
 
-    moves_and_boards.sort(key=lambda b: b[1].rank(), reverse=False) # rank moves by how good their boards are
+    moves_and_boards.sort(key=lambda b: b[1].rank(), reverse=True) # rank moves by how good their boards are
     for move_and_board in moves_and_boards:
         print(f"Move {move_and_board[0]} has score {move_and_board[1].rank()}")
+        pass
 
     for i, next_move_and_board in enumerate(moves_and_boards):
         print("---")

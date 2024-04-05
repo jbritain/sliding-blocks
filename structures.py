@@ -29,15 +29,11 @@ class Block:
 			raise NotImplementedError
 
 		if self.width != other.width:
-			#print("widths not equal")
 			return False
 		if self.height != other.height:
-			#print("heights not equal")
 			return False
 		if self.position != other.position:
-			#print(f"position not equal: {self.position}, {other.position}")
 			return False
-		#print("Equal!")
 		return True
 	
 	def get_available_moves(self, board):
@@ -59,13 +55,14 @@ class Block:
 			left_occupied = False
 			#print(f"Checking left position {block_position[0]+x_offset}, {block_position[1]}: ", end="")
 			if(self.left_block_y != -1 and occupied[self.left_block_y][block_position[0] + x_offset]): # check position we were blocked at last time since this is most likely to still be blocking us
-					#print("cache hit - ", end="")
-					left_occupied = True
+					# #print("cache hit - ", end="")
+					# left_occupied = True
+					pass
 			else:
 					for i in range(self.height): # check all spaces one to the left of the block
 							if occupied[block_position[1] + i][block_position[0] + x_offset]: # space is not empty
 									left_occupied = True
-									self.left_block_y = block_position[1] + i
+									#self.left_block_y = block_position[1] + i
 									break
 
 			if not left_occupied:
@@ -76,72 +73,82 @@ class Block:
 					#print("occupied")
 					break
 
-		for y_offset in range(0, -block_position[1], -1):
-			if (block_position[1] > 0): # ensure we aren't at the top of the board
-					# check the top
-					top_occupied = False
-					#print(f"Checking top position {block_position[0]}, {block_position[1]+}: ", end="")
-					if(self.top_block_x != -1 and occupied[block_position[1] - 1][self.top_block_x]): 
-							#print("cache hit - ", end="")
-							top_occupied = True
-					else: 
-							for i in range(self.width): # check all spaces one to the top of the block
-									if occupied[block_position[1] - 1][block_position[0] + i]: # space is not empty
-											top_occupied = True
-											#self.top_block_x = block_position[0] + i
-											break
-					
-					if not top_occupied:
-							#print("unoccupied")
-							move = Move(self.position, (block_position[0], block_position[1]-1))
-							moves.append(move)
-					else:
-							#print("occupied")
-							break
+		for y_offset in range(-1, -block_position[1]-1, -1):
+			# check the top
+			top_occupied = False
+			#print(f"Checking top position {block_position[0]}, {block_position[1]+y_offset}: ", end="")
+			if(self.top_block_x != -1 and occupied[block_position[1] + y_offset][self.top_block_x]): 
+					# #print("cache hit - ", end="")
+					# top_occupied = True
+					pass
+			else: 
+					for i in range(self.width): # check all spaces one to the top of the block
+							if occupied[block_position[1] + y_offset][block_position[0] + i]: # space is not empty
+									top_occupied = True
+									#self.top_block_x = block_position[0] + i
+									break
+			
+			if not top_occupied:
+					#print("unoccupied")
+					move = Move(self.position, (block_position[0], block_position[1] + y_offset))
+					moves.append(move)
+			else:
+					#print("occupied")
+					break
 
-		if (block_position[0] + self.width < len(occupied[0]) - 1): # ensure we aren't at the right of the board
+		for x_offset in range(0, board.width - (block_position[0] + self.width), 1):
+			try:
 				# check the right
 				right_occupied = False
-				#print(f"Checking right position {block_position[0] + self.width}, {block_position[1]}: ", end="")
-				if(self.right_block_y != -1 and occupied[self.right_block_y][block_position[0] + self.width]):
-						#print("cache hit - ", end="")
-						right_occupied = True
+				#print(f"Checking right position {block_position[0] + self.width + x_offset}, {block_position[1]}: ", end="")
+				if(self.right_block_y != -1 and occupied[self.right_block_y][block_position[0] + self.width + x_offset]):
+						# #print("cache hit - ", end="")
+						# right_occupied = True
+						pass
 				else:
 						for i in range(self.height): # check all spaces one to the right of the block
-								if occupied[block_position[1] + i][block_position[0] + self.width]: # space is not empty
+								if occupied[block_position[1] + i][block_position[0] + self.width + x_offset]: # space is not empty
 										right_occupied = True
 										#self.right_block_y = block_position[1] + i
 										break
 				
 				if not right_occupied:
 						#print("unoccupied")
-						move = Move(self.position, (block_position[0]+1, block_position[1]))
+						move = Move(self.position, (block_position[0]+x_offset+1, block_position[1]))
 						moves.append(move)
 				else:
 						#print("occupied")
-						pass
+						break
+			except IndexError:
+				#print("edge")
+				break
 
-		if (block_position[1] + self.height < len(occupied) - 1): # ensure we aren't at the bottom of the board
+		for y_offset in range(0, board.length - (block_position[1] + self.height), 1):
+			try:
 				# check the bottom
 				bottom_occupied = False
-				#print(f"Checking bottom position {block_position[0]}, {block_position[1]+self.height}: ", end="")
+				#print(f"Checking bottom position {block_position[0]}, {block_position[1]+self.height+y_offset}: ", end="")
 				if(self.bottom_block_x != -1 and occupied[block_position[0]][self.bottom_block_x]):
-						#print("cache hit - ", end="")
-						bottom_occupied = True
+						# #print("cache hit - ", end="")
+						# bottom_occupied = True
+						pass
 				else:
 						for i in range(self.width): # check all spaces one to the bottom of the block
-								if occupied[block_position[1] + self.height][block_position[0] + i]: # space is not empty
+								if occupied[block_position[1] + self.height+y_offset][block_position[0] + i]: # space is not empty
 										bottom_occupied = True
 										#self.bottom_block_x = block_position[0] + i
-										break
+										pass
 				
 				if not bottom_occupied:
 						#print("unoccupied")
-						move = Move(self.position, (block_position[0], block_position[1]+1))
+						move = Move(self.position, (block_position[0], block_position[1]+y_offset+1))
 						moves.append(move)
 				else:
 						#print("occupied")
-						pass
+						break
+			except IndexError: # I hate that I have to do this
+				#print("edge")
+				break
 
 		if len(moves) == 0: # the self cannot move
 				self.confirmed_cannot_move = True # store this in case we check it again
@@ -182,10 +189,10 @@ class Board:
 
 		first_line_split = lines[0].split(" ")
 		
-		length = int(first_line_split[0]) + 1
+		length = int(first_line_split[0])
 		assert length > 0
 
-		width = int(first_line_split[1]) + 1
+		width = int(first_line_split[1])
 		assert width > 0
 
 		for i, line in enumerate(lines[1:]): # skip first line as it describes the board
@@ -229,10 +236,8 @@ class Board:
 			for block in self.blocks:
 				if block == goal:
 					goal_found = True
-					#print("Matching block")
 					break
 			if not goal_found:
-				#print("Goal not found")
 				return False # we never found a block matching this goal
 			
 		#print("Solution match")	
@@ -240,6 +245,7 @@ class Board:
 	
 	def make_move(self, move: Move) -> bool:
 		move_made = False
+		
 		for block in self.blocks:
 			block.available_moves = None
 
@@ -275,34 +281,35 @@ class Board:
 		distance_sum = 0
 
 		for goal in self.goals:
+			distance = 0
 			for block in self.blocks:
 				if goal.width == block.width and goal.height == block.height: # matches goal
-					distance = float('inf')
 					taxicab = taxicab_distance(goal.position, block.position)
-					distance = min(distance, taxicab) # set to smaller of two distances	
-			
+					distance += taxicab # set to smaller of two distances	
+				if goal.position == block.position:
+					distance = 0
 			distance_sum += distance
 
-		goal_moves_blocked = 0
+		goal_moves_available = 0
 		# we want to be able to move the goal blocks closer to their goals
 	 	# so prioritise moves which increase the amount of space around the goal blocks
-		for goal in self.goals:
-			for block in self.blocks:
-				if goal.width == block.width and goal.height == block.height: # matches goal
-					goal_moves_blocked += 4 - len(block.get_available_moves(self))
+		# for goal in self.goals:
+		# 	for block in self.blocks:
+		# 		if goal.width == block.width and goal.height == block.height: # matches goal
+		# 			goal_moves_available += len(block.get_available_moves(self))
 		
 
-		return distance_sum + goal_moves_blocked
+		return goal_moves_available - distance_sum
 	
 	def get_occupied_spaces(self) -> list[list[bool]]:
 		occupied = [] # what blocks occupy what spaces
-		for _ in range(self.width): # set all spaces to empty, an empty space has -1
-				occupied.append([False] * self.length)
+		for _ in range(self.length - 1): # set all spaces to empty, an empty space has -1
+				occupied.append([False] * (self.width))
 
 		for block in self.blocks:
 				for y in range(block.height):
 						for x in range(block.width):
-								occupied[block.position[1] + y][block.position[0] + x] = True
+								occupied[block.position[1] + y - 1][block.position[0] + x - 1] = True
 		return occupied
 	
 		# gets all possible moves for a board
