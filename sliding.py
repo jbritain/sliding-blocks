@@ -100,7 +100,7 @@ def run_tests():
 		
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 
-if board_path == goal_path == None or True:
+if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:
@@ -109,7 +109,7 @@ else:
 		with open(goal_path) as gf:
 			goal_data = gf.read()
 
-		board = Board(board_data, goal_data)
+		board = board_from_string(board_data, goal_data)
 		solution = solve(board)
 		if(solution == -1):
 			print("-1")
