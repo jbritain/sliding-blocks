@@ -25,14 +25,14 @@ def run_tests():
 
 	puzzles = []
 
-	# with open("puzzles/easy_puzzles.csv") as easy_file:
-	# 	puzzle_reader = csv.reader(easy_file)
-	# 	for row in puzzle_reader:
-	# 		puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
-	# 		goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
-	# 		possible = row[2] == "False)"
+	with open("puzzles/easy_puzzles.csv") as easy_file:
+		puzzle_reader = csv.reader(easy_file)
+		for row in puzzle_reader:
+			puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
+			goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
+			possible = row[2] == "False)"
 
-	# 		puzzles.append((puzzle_file, goal_file, possible))
+			puzzles.append((puzzle_file, goal_file, possible))
 	
 	with open("puzzles/medium_puzzles.csv") as easy_file:
 		puzzle_reader = csv.reader(easy_file)
@@ -114,7 +114,7 @@ else:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, True)
+		solution = solve(board, False)
 		if(solution == -1):
 			print("-1")
 		else:
