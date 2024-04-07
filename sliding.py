@@ -10,8 +10,8 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/easy/140x140"
-	# goal_path = "puzzles/easy/140x140.impossible.goal"
+	#board_path = "puzzles/easy/1x1"
+	#goal_path = "puzzles/easy/1x1.goal"
 	board_path = sys.argv[1] 
 	goal_path = sys.argv[2]
 except Exception:
@@ -103,20 +103,20 @@ if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:
-		sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 		board_data = bf.read()
 
 		with open(goal_path) as gf:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, True)
+		solution = solve(board, False)
 		if(solution == -1):
 			print("-1")
 		else:
 			for move in solution:
 				print(move)
 
-		print(try_solution(board, solution))
+		#print(try_solution(board, solution))
 
 sys.stdout.close()
