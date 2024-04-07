@@ -10,10 +10,10 @@ board_path = None
 goal_path = None
 
 try:
-	board_path = "puzzles/medium/c15"
-	goal_path = "puzzles/medium/15.23-27.30.41.goal"
-	# board_path = sys.argv[1] 
-	# goal_path = sys.argv[2]
+	# board_path = "puzzles/medium/c15"
+	# goal_path = "puzzles/medium/15.23-27.30.41.goal"
+	board_path = sys.argv[1] 
+	goal_path = sys.argv[2]
 except Exception:
 	pass
 
