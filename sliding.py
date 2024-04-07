@@ -115,7 +115,7 @@ else:
 
 		board = board_from_string(board_data, goal_data)
 		solution = solve(board, False)
-		if(solution == -1):
+		if(solution == []):
 			print("-1")
 		else:
 			for move in solution:

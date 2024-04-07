@@ -73,15 +73,17 @@ class Board:
 		return True
 	
 	def make_move(self, move):
+		made_move = False
 		for block in self.blocks:
+			block.available_moves = None
 			if block.position == move.old_pos:
 				block.position = move.new_pos
 				self.occupied_hor = None
 				self.occupied_vert = None
 				self.rank_val = None
-				for block in self.blocks:
-					block.available_moves = None
-				return
+				made_move = True
+					
+		if made_move: return
 		raise Exception("Block not found")
 	
 	# if vertical is false, we generate for horizontal
