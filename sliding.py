@@ -9,11 +9,11 @@ from solver import *
 board_path = None
 goal_path = None
 
-sys.stdout = open("./output.txt", "w", encoding="utf-8")
-
 try:
-	board_path = "puzzles/medium/c15" #sys.argv[1] 
-	goal_path = "puzzles/medium/15.23-27.30.41.goal"#sys.argv[2]
+	# board_path = "puzzles/easy/140x140"
+	# goal_path = "puzzles/easy/140x140.impossible.goal"
+	board_path = sys.argv[1] 
+	goal_path = sys.argv[2]
 except Exception:
 	pass
 
@@ -62,6 +62,7 @@ def run_tests():
 		possible = puzzle[2]
 
 		print(puzzle[0], end=' ')
+
 		
 		with open(board_path) as bf:
 			board_data = bf.read()
@@ -69,7 +70,7 @@ def run_tests():
 		with open(goal_path) as gf:
 			goal_data = gf.read()
 
-		board = Board(board_data, goal_data)
+		board = board_from_string(board_data, goal_data)
 
 		try:
 			solution = solve(board)
@@ -77,35 +78,39 @@ def run_tests():
 			if solution != -1:
 				solution_correct = try_solution(board, solution, False)
 				if(solution_correct == possible):
-					print(f"PASS{' (impossible)' if not possible else ''}")
+					print("PASS", end="")
 					successful += 1
 				else:
-					print("FAIL (incorrect solution)")
+					print("FAIL (incorrect solution)", end="")
 					failed += 1
 			else:
 				if possible:
-					print("FAIL (no solution or timeout)")
+					print("FAIL (no solution or timeout)", end="")
 					failed += 1
 				else:
-					print("PASS")
+					print("PASS", end="")
 					successful += 1
 		except RecursionError:
-			print("FAIL (recursion depth exceeded)")
+			sys.stdout.close()
+			print("FAIL (recursion depth exceeded)", end="")
 			failed += 1
+		
+		print(' (impossible)' if not possible else '')
 		
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 
-if board_path == goal_path == None or True:
+if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:
+		sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 		board_data = bf.read()
 
 		with open(goal_path) as gf:
 			goal_data = gf.read()
 
-		board = Board(board_data, goal_data)
-		solution = solve(board)
+		board = board_from_string(board_data, goal_data)
+		solution = solve(board, True)
 		if(solution == -1):
 			print("-1")
 		else:

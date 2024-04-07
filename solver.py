@@ -1,91 +1,63 @@
-from structures import *
-from visual import *
-import time
 import copy
+from structures import Move
+import time
 
-# finds the moves for a block recursively, moving one space in each direction for each call
-# tried_spaces ensures we don't get stuck in a loop by storing spaces we've already tried
-# block position is the new position of the block we check around, if no position is provided we use the existing position
-# occupied is the result of get_occupied_spaces() for the board
-
-
-
-
-def search_board(board: Board, start_time: float, depth: int = 0) -> list[Move]:
-    print("---")
-    print(f"Depth: {depth}")
-    print("Searching board...")
-    print(visualise_board(board))
-
-    if(time.time() - start_time > 59):
-        return []
-
-    global tried_board_states
-    print(f"New tried board ID: {len(tried_board_states)}")
-    tried_board_states.append(board)
-
-    moves = board.get_all_possible_moves()
-    
-    moves_and_boards = [] # list of moves and their resultant boards (i.e the board and the move that got it there)
-    for next_move in moves:
-        next_board = copy.deepcopy(board)
-        next_board.make_move(next_move)
-
-        if next_board.is_solved(): # check if any of them are solved, in which case this is the move we want
-            print(f"Trying move {next_move}")
-            print(f"Depth: {depth+1}")
-            print("Searching board...")
-            print(visualise_board(board))
-            print("Solution found!")
-            return [next_move]
-        
-        if not next_board in tried_board_states: # check if we have already tried any of them
-            moves_and_boards.append((next_move, next_board))
-            
-        else:
-            print(f"Move {next_move} results in repeat board ID: {tried_board_states.index(next_board)}")
-    
-    print(f"Found {len(moves_and_boards)} possible moves")
-
-
-    moves_and_boards.sort(key=lambda b: b[1].rank(), reverse=False) # rank moves by how good their boards are
-    for move_and_board in moves_and_boards:
-        print(f"Move {move_and_board[0]} has score {move_and_board[1].rank()}")
-
-    for i, next_move_and_board in enumerate(moves_and_boards):
-        print("---")
-        print(visualise_board(board))
-        print(f"Trying move {next_move_and_board[0]} ({i + 1} of {len(moves_and_boards)})")
-        print(f"->{depth + 1}")
-        res = search_board(next_move_and_board[1], start_time, depth + 1)
-        if res != []:
-            print(f"move {next_move} success")
-            return [next_move_and_board[0]] + res
-
-    print(f"{depth - 1}<-")
-    return []
-
-
-def solve(board: Board) -> list[Move]:
-    global tried_board_states
-    tried_board_states = []
-    
-    print("Goal")
-    print(visualise_board(board, board.goals))
-
-    print("Solve")
-
-    if (board.is_solved()): # if board is already solved, just move a block to its current position
-        return [Move(board.blocks[0].position, board.blocks[0].position)]
-
-    start_time = time.time()
-
-    solution = search_board(copy.deepcopy(board), start_time)
-
-    if solution == []:
-        return -1
-
+def solve(board, debug=False):
+    if debug:
+        print("Goal:")
+        board.visualise(True)
+    if board.is_solved():
+        return [Move(board.blocks[0].position, board.blocks[0].position)] # 'null move'
+    global searched_board_states
+    searched_board_states = set()
+    solution = search_board(board, debug, time.time())
     return solution
 
+def search_board(board, debug, start_time, depth=0):
+    if not debug and time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
+        return []
+    if depth >= 100:
+        if debug: 
+            print("Excessive depth reached")
+            print(f"{depth - 1}<---------")
+        return []
 
-    
+    if debug: print(f"----->{depth}")
+    if board.is_solved(): # we did it chat
+        return True
+
+    global searched_board_states
+    searched_board_states.add(board)
+    if debug:
+        print("Searching board...")
+        board.visualise()
+
+    moves_and_boards = [] # tuples - first item is the move, second is the resultant board
+    for block in board.blocks:
+        if debug: print(f"Checking block at position {block.position}")
+        moves = block.get_available_moves(board)
+        
+        for move in moves:
+            new_board = copy.deepcopy(board)
+            new_board.make_move(move)
+            if not new_board in searched_board_states:
+                moves_and_boards.append((move, new_board))
+            else:
+                if debug: print(f"Move {move} results in duplicate board")
+
+    moves_and_boards.sort(key = lambda x: x[1].rank) # sort by ranking of resultant board
+    if debug: print(f"Found {len(moves_and_boards)} moves:")
+    for move, board in moves_and_boards:
+        if debug: print(f"    {move} with score {board.rank}")
+
+    for move, new_board in moves_and_boards:
+        if debug: print(f"Trying move {move} at depth {depth}")
+        result = search_board(new_board, debug, start_time, depth+1)
+        if result != []: # if we get anything other than an empty list back
+            if result is True: # this board is solved so the move is the final one
+                return [move] # return only that
+
+            return [move] + result # otherwise return the move it returned and our move
+
+    if debug: print(f"{depth - 1}<---------")
+    return [] # bad luck, dead end

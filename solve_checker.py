@@ -1,22 +1,19 @@
-from structures import *
-from visual import visualise_board
 import copy
 
-def try_solution(board: Board, moves: list[Move], debug = True) -> bool:
+def try_solution(board, solution, debug=True):
+    
     test_board = copy.deepcopy(board)
-
     if debug:
-        print("GOAL:")
-        print(visualise_board(test_board, test_board.goals))
-        print("TEST:")
-
-    if moves != -1:
-        for move in moves:
-            if debug: print(visualise_board(test_board))
-            if debug: print(move)
-            test_board.make_move(move)
-        if debug: print(visualise_board(test_board))
-        
-        return test_board.is_solved()
-    else:
-        print("No solution")
+        print("GOAL")
+        test_board.visualise(True)
+        print("SOLUTION")
+        test_board.visualise()
+    for move in solution:
+        test_board.make_move(move)
+        if debug:
+            print(move)
+            test_board.visualise()
+            print("---")
+    if(test_board.is_solved()):
+        return True
+    return False
