@@ -16,7 +16,7 @@ def solve(board, debug=False):
 def search_board(board, debug, start_time, depth=0):
     if not debug and time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
         return []
-    if depth >= 100:
+    if depth >= 500:
         if debug: 
             print("Excessive depth reached")
             print(f"{depth - 1}<---------")
