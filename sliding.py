@@ -10,10 +10,10 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/medium/c15"
-	# goal_path = "puzzles/medium/15.23-27.30.41.goal"
-	board_path = sys.argv[1] 
-	goal_path = sys.argv[2]
+	board_path = "puzzles/medium/c15"
+	goal_path = "puzzles/medium/15.23-27.30.41.goal"
+	# board_path = sys.argv[1] 
+	# goal_path = sys.argv[2]
 except Exception:
 	pass
 
@@ -25,14 +25,14 @@ def run_tests():
 
 	puzzles = []
 
-	with open("puzzles/easy_puzzles.csv") as easy_file:
-		puzzle_reader = csv.reader(easy_file)
-		for row in puzzle_reader:
-			puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
-			goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
-			possible = row[2] == "False)"
+	# with open("puzzles/easy_puzzles.csv") as easy_file:
+	# 	puzzle_reader = csv.reader(easy_file)
+	# 	for row in puzzle_reader:
+	# 		puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
+	# 		goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
+	# 		possible = row[2] == "False)"
 
-			puzzles.append((puzzle_file, goal_file, possible))
+	# 		puzzles.append((puzzle_file, goal_file, possible))
 	
 	with open("puzzles/medium_puzzles.csv") as easy_file:
 		puzzle_reader = csv.reader(easy_file)
@@ -73,7 +73,7 @@ def run_tests():
 		board = board_from_string(board_data, goal_data)
 
 		try:
-			solution = solve(board)
+			solution = solve(board, False)
 
 			if solution != -1:
 				solution_correct = try_solution(board, solution, False)
@@ -104,9 +104,6 @@ if board_path == goal_path == None:
 else:
 	with open(board_path) as bf:
 		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
-		if not 'easy' in board_path:
-			print("-1")
-			sys.exit()
 
 		board_data = bf.read()
 
@@ -114,13 +111,14 @@ else:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, False)
+		solution = solve(board, True)
+
 		if(solution == []):
 			print("-1")
 		else:
 			for move in solution:
 				print(move)
 
-		#print(try_solution(board, solution))
+		print(try_solution(board, solution, True))
 
-sys.stdout.close()
+#sys.stdout.close()

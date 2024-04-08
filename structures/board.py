@@ -1,5 +1,6 @@
 from .vec import vec2
 from .block import Block
+import copy
 
 def set_bit(val, bit):
 	return val | (1<<bit)
@@ -78,6 +79,8 @@ class Board:
 			block.available_moves = None
 			if block.position == move.old_pos:
 				block.position = move.new_pos
+				block.previous_sum_ver = None
+				block.previous_sum_hor = None
 				self.occupied_hor = None
 				self.occupied_vert = None
 				self.rank_val = None
@@ -168,6 +171,12 @@ class Board:
 			hash_items += str(block)
 		
 		return hash(hash_items)
+	
+	def __deepcopy__(self, memo):
+		new_block_array = []
+		for block in self.blocks:
+			new_block_array.append(copy.deepcopy(block))
+		return Board(self.size.x, self.size.y, new_block_array, self.goals)
 
 
 def board_from_string(board_string, goal_string):
