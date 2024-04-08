@@ -36,24 +36,24 @@ class Board:
 		distance_sum = 0
 
 		for goal in self.goals:
+			distance = float('inf')
 			for block in self.blocks:
 				if goal.width == block.width and goal.height == block.height: # matches goal
-					distance = float('inf')
 					taxicab = taxicab_distance(goal.position, block.position)
 					distance = min(distance, taxicab) # set to smaller of two distances	
 			
 			distance_sum += distance
 
-		goal_moves_blocked = 0
-		# we want to be able to move the goal blocks closer to their goals
-	 	# so prioritise moves which increase the amount of space around the goal blocks
-		for goal in self.goals:
-			for block in self.blocks:
-				if goal.width == block.width and goal.height == block.height: # matches goal
-					goal_moves_blocked += 4 - len(block.get_available_moves(self))
+		# goal_moves_blocked = 0
+		# # we want to be able to move the goal blocks closer to their goals
+	 	# # so prioritise moves which increase the amount of space around the goal blocks
+		# for goal in self.goals:
+		# 	for block in self.blocks:
+		# 		if goal.width == block.width and goal.height == block.height: # matches goal
+		# 			goal_moves_blocked += len(block.get_available_moves(self))
 		
 
-		return distance_sum + goal_moves_blocked
+		return distance_sum # + goal_moves_blocked
 
 	# returns the board ranking, only recalculating if necessary
 	@property
@@ -79,8 +79,6 @@ class Board:
 			block.available_moves = None
 			if block.position == move.old_pos:
 				block.position = move.new_pos
-				block.previous_sum_ver = None
-				block.previous_sum_hor = None
 				self.occupied_hor = None
 				self.occupied_vert = None
 				self.rank_val = None

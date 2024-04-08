@@ -10,10 +10,10 @@ board_path = None
 goal_path = None
 
 try:
-	board_path = "puzzles/medium/c15"
-	goal_path = "puzzles/medium/15.23-27.30.41.goal"
-	# board_path = sys.argv[1] 
-	# goal_path = sys.argv[2]
+	# board_path = "puzzles/easy/big.block.2"
+	# goal_path = "puzzles/easy/big.block.2.goal"
+	board_path = sys.argv[1] 
+	goal_path = sys.argv[2]
 except Exception:
 	pass
 
@@ -21,18 +21,18 @@ if os.name == 'nt': os.system('cls')
 
 
 def run_tests():
-
+	#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 
 	puzzles = []
 
-	# with open("puzzles/easy_puzzles.csv") as easy_file:
-	# 	puzzle_reader = csv.reader(easy_file)
-	# 	for row in puzzle_reader:
-	# 		puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
-	# 		goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
-	# 		possible = row[2] == "False)"
+	with open("puzzles/easy_puzzles.csv") as easy_file:
+		puzzle_reader = csv.reader(easy_file)
+		for row in puzzle_reader:
+			puzzle_file = "easy/" + row[0].lstrip("(").replace('"', '')
+			goal_file = "easy/" + row[1].lstrip(" ").replace('"', '')
+			possible = row[2] == "False)"
 
-	# 		puzzles.append((puzzle_file, goal_file, possible))
+			puzzles.append((puzzle_file, goal_file, possible))
 	
 	with open("puzzles/medium_puzzles.csv") as easy_file:
 		puzzle_reader = csv.reader(easy_file)
@@ -103,7 +103,7 @@ if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:
-		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+		
 
 		board_data = bf.read()
 
@@ -111,7 +111,7 @@ else:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, True)
+		solution = solve(board, False)
 
 		if(solution == []):
 			print("-1")
@@ -119,6 +119,6 @@ else:
 			for move in solution:
 				print(move)
 
-		print(try_solution(board, solution, True))
+		#print(try_solution(board, solution, True))
 
-#sys.stdout.close()
+sys.stdout.close()

@@ -2,15 +2,14 @@ from .vec import vec2
 from .move import Move
 
 class Block:
+    row_sums = {}
+    col_sums = {}
+
     def __init__(self, length, width, y, x):
         self.position = vec2(x, y)
         self.size = vec2(width, length)
         self.available_moves = None
-        
-        self.previous_sum_ver = None
-        self.previous_sum_hor = None
-        self.previous_ver_moves = []
-        self.previous_hor_moves = []
+    
 
     @property
     def height(self):
@@ -21,6 +20,7 @@ class Block:
         return self.size.x
 
     def generate_available_moves(self, board):
+        
 
         moves = []
 
@@ -33,13 +33,13 @@ class Block:
         for row in occupied_hor:
             #print("    " + bin(row))
             sum_hor |= row
+
+        past_hor_moves = Block.row_sums.get((self.position.x, self.size.x, self.size.x, sum_hor))
         
-        if sum_hor == self.previous_sum_hor:
-            moves += self.previous_hor_moves
-            #print("Horizontal cache hit")
+        if past_hor_moves:
+           #print(f"  Horizontal cache hit: {self.position.x}, {self.size.x}, {bin(sum_hor)}")
+            moves.extend(map(lambda m: Move(self.position, m), past_hor_moves)) # create move from the movement
         else:
-            self.previous_sum_hor = sum_hor
-            self.previous_hor_moves = []
 
             #print(f"row sum: {bin(sum_hor)}")
             right_width = board.width - (self.position.x + self.size.x) # spaces to the right of our block
@@ -55,21 +55,22 @@ class Block:
                 left_distance = max(0, (left & -left).bit_length() - 1) # how far left can we move
             #print("left distance:", left_distance)
 
+            horizontal_moves = []
+
             for x in range(left_distance):
-                new_move = Move(self.position, self.position + vec2(-(x + 1), 0))
-                moves.append(new_move)
-                self.previous_hor_moves.append(new_move)
+                horizontal_moves.append(Move(self.position, vec2(-(x + 1), 0)))
             
             right_distance = right_width - right.bit_length() if right_width != 0 else 0 # if we are on the right just return 0 because we get 1 when we shouldn't
             #print("right distance: ", right_distance)
 
             for x in range(right_distance):
-                new_move = Move(self.position, self.position + vec2(x+1, 0))
-                moves.append(new_move)
-                self.previous_hor_moves.append(new_move)
-        
+                horizontal_moves.append(Move(self.position, vec2(x+1, 0)))
+                
+            moves += horizontal_moves 
+            Block.row_sums[(self.position.x, self.size.x, sum_hor)] = list(map(lambda m: m.movement, horizontal_moves)) # only store movement since the block that has the move might be a different one
+           #print(f"  Horizontal cache write: {self.position.x}, {self.size.x}, {bin(sum_hor)}")
 
-        # ===verical Moves===
+        # ===vertical Moves===
 
         occupied_ver = board.get_occupied(True)[self.position.x:self.position.x + self.size.x]
         
@@ -79,12 +80,15 @@ class Block:
             #print("    " + bin(col))
             sum_ver |= col
 
-        if sum_ver == self.previous_sum_ver:
-            moves += self.previous_ver_moves
-            #print("vertical cache hit")
+        past_ver_moves = Block.col_sums.get((self.position.y, self.size.y, sum_ver))
+        if past_ver_moves:
+            
+
+           #print(f"  Vertical cache hit: {self.position.y}, {self.size.y}, {bin(sum_ver)}")
+            moves.extend(map(lambda m: Move(self.position, m), past_ver_moves))
+            if f"{self.position.y}, {self.size.y}, {bin(sum_ver)}" == "0, 2, 0b1100":
+                pass
         else:
-            self.previous_sum_ver = sum_ver
-            self.previous_ver_moves = []
 
             #print(f"col sum: {bin(sum_ver)}")
             bottom_height = board.height - (self.position.y + self.size.y) # spaces below our block
@@ -100,19 +104,21 @@ class Block:
                 top_distance = max(0, (top & -top).bit_length() - 1) # how far up can we move
             #print("top distance:", top_distance)
 
+            vertical_moves = []
+
             for y in range(top_distance):
-                new_move = Move(self.position, self.position + vec2(0, -(y + 1)))
-                moves.append(new_move)
-                self.previous_ver_moves.append(new_move)
+                vertical_moves.append(Move(self.position, vec2(0, -(y + 1))))
 
             
             bottom_distance = bottom_height - bottom.bit_length() if bottom_height != 0 else 0 # if we are on the right just return 0 because we get 1 when we shouldn't
             #print("bottom distance:", bottom_distance)
 
             for y in range(bottom_distance):
-                new_move = Move(self.position, self.position + vec2(0, y+1))
-                moves.append(new_move)
-                self.previous_ver_moves.append(new_move)
+                vertical_moves.append(Move(self.position, vec2(0, y+1)))
+            
+            Block.col_sums[(self.position.y, self.size.y, sum_ver)] = list(map(lambda m: m.movement, vertical_moves))
+           #print(f"  Vertical cache write: {self.position.y}, {self.size.y}, {bin(sum_ver)}")
+            moves += vertical_moves
 
         return moves
     
