@@ -10,14 +10,14 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/easy/big.block.2"
-	# goal_path = "puzzles/easy/big.block.2.goal"
+	# board_path = "puzzles/easy/instant.match.0"
+	# goal_path = "puzzles/easy/instant.match.0.goal"
 	board_path = sys.argv[1] 
 	goal_path = sys.argv[2]
 except Exception:
 	pass
 
-if os.name == 'nt': os.system('cls')
+#if os.name == 'nt': os.system('cls')
 
 
 def run_tests():
@@ -103,6 +103,11 @@ if board_path == goal_path == None:
 	run_tests()
 else:
 	with open(board_path) as bf:
+
+		if not 'easy' in board_path:
+			print("-1")
+			print()
+			sys.exit()
 		
 
 		board_data = bf.read()
@@ -118,6 +123,7 @@ else:
 		else:
 			for move in solution:
 				print(move)
+		print()
 
 		#print(try_solution(board, solution, True))
 
