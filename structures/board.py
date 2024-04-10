@@ -1,5 +1,6 @@
 from .vec import vec2
 from .block import Block
+from .move import Move
 import copy
 
 def set_bit(val, bit):
@@ -86,6 +87,11 @@ class Board:
 					
 		if made_move: return
 		raise Exception("Block not found")
+	
+	def undo_move(self, move):
+		inverse_move = Move(move.new_pos, move.movement * -1)
+		return self.make_move(inverse_move)
+	
 	
 	# if vertical is false, we generate for horizontal
 	# returns an array of binary numbers representing a row on the board

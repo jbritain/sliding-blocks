@@ -9,8 +9,12 @@ class vec2:
     def __add__(self, other):
         return vec2(self.x + other.x, self.y + other.y)
     
-    def __iadd__(self, other):
-        self = self + other
+    __iadd__ = __add__
+
+    def __mul__(self, other):
+        return vec2(self.x * other, self.y * other)
+    
+    __rmul__ = __mul__
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y

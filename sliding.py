@@ -1,6 +1,7 @@
 import sys
 import os
 import csv
+import cProfile
 
 from structures import *
 from solve_checker import *
@@ -10,8 +11,8 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/easy/instant.match.0"
-	# goal_path = "puzzles/easy/instant.match.0.goal"
+	# board_path = "puzzles/easy/init.from.handout"
+	# goal_path = "puzzles/easy/goal.2.from.handout"
 	board_path = sys.argv[1] 
 	goal_path = sys.argv[2]
 except Exception:
@@ -34,23 +35,23 @@ def run_tests():
 
 			puzzles.append((puzzle_file, goal_file, possible))
 	
-	with open("puzzles/medium_puzzles.csv") as easy_file:
-		puzzle_reader = csv.reader(easy_file)
-		for row in puzzle_reader:
-			puzzle_file = "medium/" + row[0].lstrip("(").replace('"', '')
-			goal_file = "medium/" + row[1].lstrip(" ").replace('"', '')
-			possible = row[2] == "False)"
+	# with open("puzzles/medium_puzzles.csv") as easy_file:
+	# 	puzzle_reader = csv.reader(easy_file)
+	# 	for row in puzzle_reader:
+	# 		puzzle_file = "medium/" + row[0].lstrip("(").replace('"', '')
+	# 		goal_file = "medium/" + row[1].lstrip(" ").replace('"', '')
+	# 		possible = row[2] == "False)"
 
-			puzzles.append((puzzle_file, goal_file, possible))
+	# 		puzzles.append((puzzle_file, goal_file, possible))
 	
-	with open("puzzles/hard_puzzles.csv") as easy_file:
-		puzzle_reader = csv.reader(easy_file)
-		for row in puzzle_reader:
-			puzzle_file = "hard/" + row[0].lstrip("(").replace('"', '')
-			goal_file = "hard/" + row[1].lstrip(" ").replace('"', '')
-			possible = row[2] == "False)"
+	# with open("puzzles/hard_puzzles.csv") as easy_file:
+	# 	puzzle_reader = csv.reader(easy_file)
+	# 	for row in puzzle_reader:
+	# 		puzzle_file = "hard/" + row[0].lstrip("(").replace('"', '')
+	# 		goal_file = "hard/" + row[1].lstrip(" ").replace('"', '')
+	# 		possible = row[2] == "False)"
 
-			puzzles.append((puzzle_file, goal_file, possible))
+	# 		puzzles.append((puzzle_file, goal_file, possible))
 
 	successful = 0
 	failed = 0
@@ -100,14 +101,9 @@ def run_tests():
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 
 if board_path == goal_path == None:
-	run_tests()
+	cProfile.run("run_tests()", sort="tottime")
 else:
 	with open(board_path) as bf:
-
-		if not 'easy' in board_path:
-			print("-1")
-			print()
-			sys.exit()
 		
 
 		board_data = bf.read()
@@ -125,6 +121,6 @@ else:
 				print(move)
 		print()
 
-		#print(try_solution(board, solution, True))
+		print(try_solution(board, solution, True))
 
 sys.stdout.close()
