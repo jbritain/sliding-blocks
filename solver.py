@@ -19,11 +19,10 @@ def solve(board, debug=False):
     solution = search_board(board, debug, time.time())
     return solution
 
-def search_board(board, debug, start_time, depth=0):    
+def search_board(board, debug, start_time, depth=0):   
     if time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
-        if depth == 0:
-            print("TIMEOUT - ", end="")
         return []
+        
 
 
     if debug: print(f"----->{depth}")
@@ -38,10 +37,13 @@ def search_board(board, debug, start_time, depth=0):
         return []
 
     global searched_board_states
-    searched_board_states.add(hash(board))
     if debug:
         print("Searching board...")
         board.visualise()
+
+    searched_board_states.add(hash(board))
+    if hash(board) == -8471149908106808705:
+        pass
 
     moves_and_scores = [] # tuples - first item is the move, second is the resultant board
     for block in board.blocks:
@@ -51,7 +53,9 @@ def search_board(board, debug, start_time, depth=0):
         for move in moves:
             if debug: print(f"    Found move {move}", end="")
             board.make_move(move, False)
-            if not hash(board) in searched_board_states:
+            board_hash = hash(board)
+            if debug: print(f" {board_hash}", end="")
+            if not board_hash in searched_board_states:
                 if debug: print(f" with score {board.rank}")
                 moves_and_scores.append((move, board.rank))
             else:
@@ -74,5 +78,8 @@ def search_board(board, debug, start_time, depth=0):
 
     if debug: print(f"{depth - 1}<---------")
     if depth == 0:
-        print("NO SOLUTION - ", end="")
+        if time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
+            print("TIMEOUT - ", end="")
+        else:
+            print("NO SOLUTION - ", end="")
     return [] # bad luck, dead end

@@ -9,9 +9,6 @@ def set_bit(val, bit):
 def unset_bit(val, bit):
 	return val & ~(1<<bit)
 
-def taxicab_distance(pos_1, pos_2):
-	return abs(pos_1.x - pos_2.x) + abs(pos_1.y - pos_2.y)
-
 class Board:
 	# blocks and goals are lists of blocks
 	def __init__(self, width, length, blocks, goals):
@@ -21,6 +18,7 @@ class Board:
 		self.rank_val = None
 		self.occupied_vert = None
 		self.occupied_hor = None
+		self.hash = None
 
 	@property
 	def height(self):
@@ -37,21 +35,7 @@ class Board:
 		# for each goal, select the nearest block which matches it, and use that distance
 		# sum the distances
 
-		distance_sum = 0
-
-		for goal in self.goals:
-			goal_satisfied = False
-			distance = float('inf')
-			for block in self.blocks:
-				if block.position == goal.position:
-					goal_satisfied = True
-					break
-				if goal.width == block.width and goal.height == block.height: # matches goal
-					taxicab = taxicab_distance(goal.position, block.position)
-					distance = min(distance, taxicab) # set to smaller of two distances	
-			
-			if not goal_satisfied:
-				distance_sum += distance
+		distance_sum = sum(b.get_goal_distance(self) for b in self.blocks)
 
 		# goal_moves_blocked = 0
 		# # we want to be able to move the goal blocks closer to their goals
@@ -83,11 +67,12 @@ class Board:
 		return True
 	
 	def make_move(self, move, chbit=True): # if chbit is true, the bitboard is modified. Should only be False if we know we are immediately going to undo the move
-		made_move = False
+		move_made = False
 		for block in self.blocks:
 			block.available_moves = None
-			if block.position == move.old_pos:
+			if not move_made and block.position == move.old_pos:
 				block.position = move.new_pos
+				block.goal_distance_val = None
 				# self.occupied_hor = None
 				# self.occupied_vert = None
 
@@ -111,9 +96,10 @@ class Board:
 							self.occupied_hor[new_y] = set_bit(self.occupied_hor[new_y], self.size.x - (new_x) - 1)
 
 				self.rank_val = None
-				made_move = True
-					
-		if made_move: return
+				move_made = True
+				self.hash = None
+		if move_made:
+			return
 		raise Exception("Block not found")
 	
 	def undo_move(self, move, chbit=True):
@@ -194,25 +180,26 @@ class Board:
 		
 
 		print(full_vis)
+		if not goal:
+			print(f"HASH: {hash(self)}")
 
-		if self.occupied_vert and self.occupied_hor:
-			print("vert")
-			for v in self.occupied_vert:
-				print(bin(v))
-			print("hor")
-			for h in self.occupied_hor:
-				print(bin(h))
+			if self.occupied_vert and self.occupied_hor:
+				print("vert")
+				for v in self.occupied_vert:
+					print(bin(v))
+				print("hor")
+				for h in self.occupied_hor:
+					print(bin(h))
 
 	def __eq__(self, other):
 		return hash(self) == hash(other)
 	
 	
 	def __hash__(self):
-		hash_items = ""
-		for block in self.blocks:
-			hash_items += str(block)
-		
-		return hash(hash_items)
+		if self.hash is None:
+			norm = sorted((block.position.y, block.position.x, block.size.y, block.size.x) for block in self.blocks)
+			self.hash = hash(tuple(norm))
+		return self.hash
 	
 	def __deepcopy__(self, memo):
 		new_block_array = []

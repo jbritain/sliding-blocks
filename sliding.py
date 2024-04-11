@@ -13,7 +13,7 @@ goal_path = None
 try:
 	# board_path = "puzzles/medium/c15"
 	# goal_path = "puzzles/medium/15.23-27.30.41.goal"
-	goal_path = sys.argv[1]
+	board_path = sys.argv[1]
 	goal_path = sys.argv[2]
 except Exception:
 	pass
@@ -120,7 +120,7 @@ if board_path == goal_path == None:
 	cProfile.run("run_tests()", sort="tottime")
 else:
 	with open(board_path) as bf:
-		# sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 		
 		board_data = bf.read()
 

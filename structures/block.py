@@ -1,6 +1,9 @@
 from .vec import vec2
 from .move import Move
 
+def taxicab_distance(pos_1, pos_2):
+	return abs(pos_1.x - pos_2.x) + abs(pos_1.y - pos_2.y)
+
 class Block:
     row_sums = {}
     col_sums = {}
@@ -9,6 +12,7 @@ class Block:
         self.position = vec2(x, y)
         self.size = vec2(width, length)
         self.available_moves = None
+        self.goal_distance_val = None
     
 
     @property
@@ -126,6 +130,22 @@ class Block:
         if self.available_moves is None:
             self.available_moves = self.generate_available_moves(board)
         return self.available_moves
+    
+    def generate_goal_distance(self, board):
+        distance = 0
+        for goal in board.goals:
+            if self.size != goal.size:
+                next
+            elif self.position == goal.position:
+                return 0
+            else:
+                distance += taxicab_distance(self.position, goal.position)
+        return distance
+
+    def get_goal_distance(self, board):
+        if self.goal_distance_val == None:
+            self.goal_distance_val = self.generate_goal_distance(board)
+        return self.goal_distance_val
     
     def __eq__(self, other):
         return self.position == other.position and self.size == other.size
