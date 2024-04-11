@@ -11,8 +11,8 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/medium/c15"
-	# goal_path = "puzzles/medium/15.23-27.30.41.goal"
+	# board_path = "puzzles/easy/big.block.1"
+	# goal_path = "puzzles/easy/big.block.1.goal"
 	board_path = sys.argv[1]
 	goal_path = sys.argv[2]
 except Exception:
@@ -120,7 +120,7 @@ if board_path == goal_path == None:
 	cProfile.run("run_tests()", sort="tottime")
 else:
 	with open(board_path) as bf:
-		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+		sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 		
 		board_data = bf.read()
 
@@ -128,7 +128,7 @@ else:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, False)
+		solution = solve(board, True)
 
 		if(solution == []):
 			print("-1")

@@ -1,8 +1,10 @@
 import copy
 from structures import Move, vec2, Block
 import time
+import sys
 
-recurse_limit = 900
+recurse_limit = 1700
+sys.setrecursionlimit(recurse_limit + 50)
 
 def solve(board, debug=False):
 
@@ -42,8 +44,6 @@ def search_board(board, debug, start_time, depth=0):
         board.visualise()
 
     searched_board_states.add(hash(board))
-    if hash(board) == -8471149908106808705:
-        pass
 
     moves_and_scores = [] # tuples - first item is the move, second is the resultant board
     for block in board.blocks:
