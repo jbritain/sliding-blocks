@@ -2,6 +2,8 @@ import copy
 from structures import Move, vec2, Block
 import time
 
+recurse_limit = 900
+
 def solve(board, debug=False):
 
     Block.col_sums = {}
@@ -17,19 +19,23 @@ def solve(board, debug=False):
     solution = search_board(board, debug, time.time())
     return solution
 
-def search_board(board, debug, start_time, depth=0):
-    if not debug and time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
+def search_board(board, debug, start_time, depth=0):    
+    if time.time() - start_time >= 59: # out of time, I hope this puzzle is impossible
+        if depth == 0:
+            print("TIMEOUT - ", end="")
         return []
-    if depth >= 100:
+
+
+    if debug: print(f"----->{depth}")
+    if board.is_solved(): # we did it chat
+        return True
+    
+    if depth == recurse_limit:
         if debug: 
             print("Excessive depth reached")
             print(f"{depth - 1}<---------")
             # pass
         return []
-
-    if debug: print(f"----->{depth}")
-    if board.is_solved(): # we did it chat
-        return True
 
     global searched_board_states
     searched_board_states.add(hash(board))
@@ -44,14 +50,14 @@ def search_board(board, debug, start_time, depth=0):
         
         for move in moves:
             if debug: print(f"    Found move {move}", end="")
-            board.make_move(move)
+            board.make_move(move, False)
             if not hash(board) in searched_board_states:
                 if debug: print(f" with score {board.rank}")
                 moves_and_scores.append((move, board.rank))
             else:
                 if debug: print(f" (duplicate board)")
                 pass
-            board.undo_move(move)
+            board.undo_move(move, False)
 
     moves_and_scores.sort(key = lambda x: x[1]) # sort by ranking of resultant board
 
@@ -67,4 +73,6 @@ def search_board(board, debug, start_time, depth=0):
             return [move] + result # otherwise return the move it returned and our move
 
     if debug: print(f"{depth - 1}<---------")
+    if depth == 0:
+        print("NO SOLUTION - ", end="")
     return [] # bad luck, dead end

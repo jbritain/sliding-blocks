@@ -6,6 +6,9 @@ import copy
 def set_bit(val, bit):
 	return val | (1<<bit)
 
+def unset_bit(val, bit):
+	return val & ~(1<<bit)
+
 def taxicab_distance(pos_1, pos_2):
 	return abs(pos_1.x - pos_2.x) + abs(pos_1.y - pos_2.y)
 
@@ -37,13 +40,18 @@ class Board:
 		distance_sum = 0
 
 		for goal in self.goals:
+			goal_satisfied = False
 			distance = float('inf')
 			for block in self.blocks:
+				if block.position == goal.position:
+					goal_satisfied = True
+					break
 				if goal.width == block.width and goal.height == block.height: # matches goal
 					taxicab = taxicab_distance(goal.position, block.position)
 					distance = min(distance, taxicab) # set to smaller of two distances	
 			
-			distance_sum += distance
+			if not goal_satisfied:
+				distance_sum += distance
 
 		# goal_moves_blocked = 0
 		# # we want to be able to move the goal blocks closer to their goals
@@ -74,23 +82,45 @@ class Board:
 				return False
 		return True
 	
-	def make_move(self, move):
+	def make_move(self, move, chbit=True): # if chbit is true, the bitboard is modified. Should only be False if we know we are immediately going to undo the move
 		made_move = False
 		for block in self.blocks:
 			block.available_moves = None
 			if block.position == move.old_pos:
 				block.position = move.new_pos
-				self.occupied_hor = None
-				self.occupied_vert = None
+				# self.occupied_hor = None
+				# self.occupied_vert = None
+
+
+				if chbit and self.occupied_hor and self.occupied_vert:
+					for x in range(block.size.x):
+						for y in range(block.size.y):
+							old_x = move.old_pos.x + x
+							old_y = move.old_pos.y + y
+							
+							self.occupied_vert[old_x] = unset_bit(self.occupied_vert[old_x], self.size.y - (old_y) - 1)
+							self.occupied_hor[old_y] = unset_bit(self.occupied_hor[old_y], self.size.x - (old_x) - 1)
+							
+
+					for x in range(block.size.x):
+						for y in range(block.size.y):
+							new_x = move.new_pos.x + x
+							new_y = move.new_pos.y + y
+
+							self.occupied_vert[new_x] = set_bit(self.occupied_vert[new_x], self.size.y - (new_y) - 1)
+							self.occupied_hor[new_y] = set_bit(self.occupied_hor[new_y], self.size.x - (new_x) - 1)
+
 				self.rank_val = None
 				made_move = True
 					
 		if made_move: return
 		raise Exception("Block not found")
 	
-	def undo_move(self, move):
+	def undo_move(self, move, chbit=True):
+		if chbit == True:
+			pass
 		inverse_move = Move(move.new_pos, move.movement * -1)
-		return self.make_move(inverse_move)
+		return self.make_move(inverse_move, chbit)
 	
 	
 	# if vertical is false, we generate for horizontal
@@ -164,6 +194,14 @@ class Board:
 		
 
 		print(full_vis)
+
+		if self.occupied_vert and self.occupied_hor:
+			print("vert")
+			for v in self.occupied_vert:
+				print(bin(v))
+			print("hor")
+			for h in self.occupied_hor:
+				print(bin(h))
 
 	def __eq__(self, other):
 		return hash(self) == hash(other)
