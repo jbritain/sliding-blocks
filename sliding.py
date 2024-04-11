@@ -120,7 +120,7 @@ if board_path == goal_path == None:
 	cProfile.run("run_tests()", sort="tottime")
 else:
 	with open(board_path) as bf:
-		sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
 		
 		board_data = bf.read()
 
@@ -128,14 +128,13 @@ else:
 			goal_data = gf.read()
 
 		board = board_from_string(board_data, goal_data)
-		solution = solve(board, True)
+		solution = solve(board, False)
 
 		if(solution == []):
 			print("-1")
 		else:
 			for move in solution:
 				print(move)
-		print()
 
 		#print(try_solution(board, solution, True))
 
