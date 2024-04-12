@@ -181,7 +181,7 @@ class Board:
 
 		print(full_vis)
 		if not goal:
-			print(f"HASH: {hash(self)}")
+			#print(f"HASH: {hash(self)}")
 
 			if self.occupied_vert and self.occupied_hor:
 				print("vert")
