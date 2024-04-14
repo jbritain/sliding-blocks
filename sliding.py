@@ -12,8 +12,8 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/easy/140x140"
-	# goal_path = "puzzles/easy/140x140.impossible.goal"
+	# board_path = "puzzles/hard/big.tray.4"
+	# goal_path = "puzzles/hard/many.blocks.20.goal"
 	board_path = sys.argv[1]
 	goal_path = sys.argv[2]
 except Exception:
