@@ -19,6 +19,7 @@ class Board:
 		self.occupied_vert = None
 		self.occupied_hor = None
 		self.hash = None
+		self.moves_made = []
 
 	@property
 	def height(self):
@@ -66,7 +67,9 @@ class Board:
 				return False
 		return True
 	
-	def make_move(self, move, chbit=True): # if chbit is true, the bitboard is modified. Should only be False if we know we are immediately going to undo the move
+	# if chbit is true, the bitboard is modified. Should only be False if we know we are immediately going to undo the move
+	# if count_move is true, the move is added to the moves_made list. Should be false if we are undoing a move and thus removing it from moves_made
+	def make_move(self, move, chbit=True, count_move=False):
 		move_made = False
 		for block in self.blocks:
 			block.available_moves = None
@@ -75,6 +78,9 @@ class Board:
 				block.goal_distance_val = None
 				# self.occupied_hor = None
 				# self.occupied_vert = None
+	
+				if count_move:
+					self.moves_made.append(move)
 
 
 				if chbit and self.occupied_hor and self.occupied_vert:
@@ -102,11 +108,17 @@ class Board:
 			return
 		raise Exception("Block not found")
 	
+	# LEGACY METHOD, DOESN'T REMOVE FROM moves_made, DON'T CALL EXTERNALLY (use undo_last)
 	def undo_move(self, move, chbit=True):
 		if chbit == True:
 			pass
 		inverse_move = Move(move.new_pos, move.movement * -1)
 		return self.make_move(inverse_move, chbit)
+	
+	# ONLY CALL IF THE LAST MOVE WE MADE WAS ONE WE COUNTED
+	def undo_last(self):
+		last_move = self.moves_made.pop()
+		return self.undo_move(last_move, True)
 	
 	
 	# if vertical is false, we generate for horizontal
