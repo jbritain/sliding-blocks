@@ -135,6 +135,8 @@ class Block:
         return self.available_moves
     
     def generate_goal_distance(self, board):
+        if board.big_tray:
+            return 0
         distance = 0
         for goal in board.goals:
             if self.size != goal.size:

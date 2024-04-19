@@ -1,5 +1,5 @@
 from .vec import vec2
-from .block import Block
+from .block import Block, all_ones
 from .move import Move
 import copy
 
@@ -11,7 +11,7 @@ def unset_bit(val, bit):
 
 class Board:
 	# blocks and goals are lists of blocks
-	def __init__(self, width, length, blocks, goals):
+	def __init__(self, width, length, blocks, goals, big_tray):
 		self.size = vec2(width, length)
 		self.blocks = blocks
 		self.goals = goals
@@ -20,6 +20,9 @@ class Board:
 		self.occupied_hor = None
 		self.hash = None
 		self.moves_made = []
+		self.big_tray = big_tray # case: the board is all 1x1 blocks and has one free space
+		if self.big_tray: # the target empty position for a big tray
+			self.big_tray_gap = self.find_gap(True)
 
 	@property
 	def height(self):
@@ -57,6 +60,9 @@ class Board:
 		return self.rank_val
 	
 	def is_solved(self):
+		if self.big_tray:
+			return self.find_gap() == self.big_tray_gap
+
 		for goal in self.goals:
 			found_goal = False
 			for block in self.blocks:
@@ -120,16 +126,41 @@ class Board:
 		last_move = self.moves_made.pop()
 		return self.undo_move(last_move, True)
 	
+	def find_gap(self, goal=False):
+		gap_row = -2
+		gap_col = -2
+
+		if goal:
+			rows = self.generate_occupied(False, goal)
+			cols = self.generate_occupied(True, goal)
+		else:
+			rows = self.get_occupied(False)
+			cols = self.get_occupied(True)
+		for y, row in enumerate(rows):
+			if not all_ones(row) or row.bit_length() != self.width:
+				gap_row = y
+				break
+		for x, col in enumerate(cols):
+			if not all_ones(col) or col.bit_length() != self.height:
+				gap_col = x
+				break
+		
+		return vec2(gap_col, gap_row)
+	
 	
 	# if vertical is false, we generate for horizontal
 	# returns an array of binary numbers representing a row on the board
 	# a 1 is an occupied space, a 0 is an empty one
-	def generate_occupied(self, vertical):
-		
+	def generate_occupied(self, vertical, goal=False):
+		if goal:
+			blocks = self.goals
+		else:
+			blocks = self.blocks
+
 		if vertical:
 			cols = [0] * self.size.x
 			
-			for block in self.blocks:
+			for block in blocks:
 				for x in range(block.size.x):
 					for y in range(block.size.y):
 						x_pos = block.position.x + x
@@ -139,7 +170,7 @@ class Board:
 		
 		rows = [0] * self.size.y
 
-		for block in self.blocks:
+		for block in blocks:
 			for x in range(block.size.x):
 				for y in range(block.size.y):
 					y_pos = block.position.y + y
@@ -217,7 +248,7 @@ class Board:
 		new_block_array = []
 		for block in self.blocks:
 			new_block_array.append(copy.deepcopy(block))
-		return Board(self.size.x, self.size.y, new_block_array, self.goals)
+		return Board(self.size.x, self.size.y, new_block_array, self.goals, self.big_tray)
 
 
 def board_from_string(board_string, goal_string):
@@ -228,10 +259,17 @@ def board_from_string(board_string, goal_string):
 	width = int(dims[1])
 
 	blocks = []
+
+	big_tray = len(board_lines) == (width * length)
 	
 	for line in board_lines[1:]:
 		data = line.split(" ")
-		blocks.append(Block(int(data[0]), int(data[1]), int(data[2]), int(data[3])))
+		block = Block(int(data[0]), int(data[1]), int(data[2]), int(data[3]))
+		if (not big_tray) or (not block.width == block.height == 1):
+			big_tray = False
+		blocks.append(block)
+
+	#if big_tray: print("big tray")
 
 	goal_lines = goal_string.split("\n")
 
@@ -241,4 +279,4 @@ def board_from_string(board_string, goal_string):
 			data = line.split(" ")
 			goals.append(Block(int(data[0]), int(data[1]), int(data[2]), int(data[3])))
 
-	return Board(width, length, blocks, goals)
+	return Board(width, length, blocks, goals, big_tray)

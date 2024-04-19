@@ -1,12 +1,16 @@
 
-from structures import Move, vec2, Block, Stack
+from structures import Move, vec2, Block, Stack, all_ones
+import time
+import math
 
-iter_limit = 1000000
+def sign(x):
+    return x / abs(x)
 
 def solve(board):
 
     Block.col_sums = {}
     Block.row_sums = {}
+
     if board.is_solved():
         return [Move(board.blocks[0].position, vec2(0, 0))] # 'null move'
     global searched_board_states
@@ -14,14 +18,33 @@ def solve(board):
     solution = search_board(board)
     return solution
 
-def explore_board(board, reverse_move_order=False):
     global searched_board_states
     global iter_count
     moves_and_scores = []
-    for block in board.blocks:
-        iter_count += 1
-        if iter_count > iter_limit:
+
+    check_blocks = []
+
+    if board.big_tray:
+        gap = board.find_gap()
+
+        if debug: print(f"gap at ({gap.x}, {gap.y})")
+
+        directions = sign(board.big_tray_gap - gap) # directions we need to move in
+
+        for block in board.blocks:
+            check_col = block.position.x == gap.x or block.position.x == gap.x + directions.x
+
+            check_row = block.position.y == gap.y or block.position.y == gap.y + directions.y
+
+            if check_col and check_row:
+                check_blocks.append(block)
+    else:
+        check_blocks = board.blocks
+
+    for block in check_blocks:
+        if time.time() - start_time > 59:
             return []
+        if debug: print(f"checking block at ({block.position.x}, {block.position.y})")
         moves = block.get_available_moves(board)
         for move in moves:
                 board.make_move(move, False)
@@ -39,12 +62,15 @@ def explore_board(board, reverse_move_order=False):
 
 def search_board(board):
 
+    start_time = time.time()
+
     global iter_count
     iter_count = 0
     move_stack = Stack() # stack containing tuples of moves and the depth they must be made at
     
     # initialise stack with available moves from initial board state
-    moves_and_depths =  map(lambda x: (x, 0), explore_board(board, True))
+
+    moves_and_depths =  map(lambda x: (x, 0), explore_board(board, start_time True))
     move_stack.extend(moves_and_depths)
 
     depth = 0
@@ -54,7 +80,7 @@ def search_board(board):
         if board.is_solved():
             return board.moves_made
 
-        if iter_count > iter_limit:
+        if time.time() - start_time > 59:
             return []
 
         move, move_depth = move_stack.pop() # pop next move from the stack
@@ -68,7 +94,8 @@ def search_board(board):
         board.make_move(move, True, True)
         depth += 1
 
-        moves_and_depths =  map(lambda x: (x, depth), explore_board(board, True))
+        moves_and_depths =  map(lambda x: (x, depth), explore_board(board, start_time, True))
+
         move_stack.extend(moves_and_depths)
 
     if board.is_solved():
