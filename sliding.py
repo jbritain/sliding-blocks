@@ -12,10 +12,10 @@ board_path = None
 goal_path = None
 
 try:
-	# board_path = "puzzles/hard/big.tray.4"
-	# goal_path = "puzzles/hard/many.blocks.20.goal"
-	board_path = sys.argv[1]
-	goal_path = sys.argv[2]
+	board_path = "puzzles/hard/big.tray.4"
+	goal_path = "puzzles/hard/many.blocks.20.goal"
+	# board_path = sys.argv[1]
+	# goal_path = sys.argv[2]
 except Exception:
 	pass
 
@@ -126,29 +126,29 @@ def run_tests():
 	print(f"{successful} tests of {successful + failed} passed [{(successful * 100) / (successful + failed)}]%")
 	print(f"You will get {easy_marks + max(medium_marks, 19) + max(hard_marks, 41)} marks")
 
-if board_path == goal_path == None:
-	#cProfile.run("run_tests()", sort="tottime")
-	if os.name == 'nt': os.system('cls')
-	run_tests()
-else:
-	with open(board_path) as bf:
-		#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
-		
-		board_data = bf.read()
+# if board_path == goal_path == None:
+# 	#cProfile.run("run_tests()", sort="tottime")
+# 	if os.name == 'nt': os.system('cls')
+# 	run_tests()
+# else:
+with open(board_path) as bf:
+	#sys.stdout = open(f"./output.txt", "w+", encoding="utf-8")
+	
+	board_data = bf.read()
 
-		with open(goal_path) as gf:
-			goal_data = gf.read()
+	with open(goal_path) as gf:
+		goal_data = gf.read()
 
-		board = board_from_string(board_data, goal_data)
-		board_copy = copy.deepcopy(board)
-		solution = solve(board, False)
+	board = board_from_string(board_data, goal_data)
+	board_copy = copy.deepcopy(board)
+	solution = solve(board, False)
 
-		if(solution == []):
-			print("-1")
-		else:
-			for move in solution:
-				print(move)
+	if(solution == []):
+		print("-1")
+	else:
+		for move in solution:
+			print(move)
 
-		#print(try_solution(board_copy, solution, True))
+	#print(try_solution(board_copy, solution, True))
 
-sys.stdout.close()
+#sys.stdout.close()
