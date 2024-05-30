@@ -1,3 +1,5 @@
+This is my solution to the 'Sliding Blocks' assignment I was given for my Algorithms and Data Structures project.
+
 The format of the 3 CSV files is
 (<board>,<goal>,<impossible>)
 
